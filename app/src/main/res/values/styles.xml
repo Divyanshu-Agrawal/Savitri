@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Support.CoordinatorLayout</item>
+        <item name="android:actionButtonStyle">@style/ActionButton</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" />
+
+    <style name="ActionButton" parent="Widget.AppCompat.ActionButton">
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="toolbarTheme">
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+</resources>

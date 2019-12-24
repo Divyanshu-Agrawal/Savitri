@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/renew_compliance"
+        android:title="Renew"
+        android:icon="@drawable/edit_icon"
+        android:iconTint="@color/colorPrimaryDark"
+        app:showAsAction="never|withText"/>
+
+    <item
+        android:id="@+id/assign_compliance"
+        android:title="Assign"
+        android:icon="@drawable/assign_icon"
+        android:iconTint="@color/colorPrimaryDark"
+        app:showAsAction="never|withText"/>
+
+</menu>

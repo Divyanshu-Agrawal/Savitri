@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AddTask">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Add Task"
+        app:titleTextColor="@color/button_text"
+        android:theme="@style/toolbarTheme"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress_bar"
+        android:visibility="gone"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="@dimen/_10sdp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/name_title"
+                android:text="Task Name"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/_30sdp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/add_task_name"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Task Name"
+                android:inputType="textCapWords"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:layout_below="@id/name_title"
+                android:background="@drawable/custom_textbox"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/date_title"
+                android:text="Task Due Date"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:layout_below="@id/add_task_name"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/_30sdp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/add_task_due_date"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Task Due Date"
+                android:inputType="date"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:focusable="false"
+                android:layout_below="@id/date_title"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:background="@drawable/custom_textbox"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/detail_title"
+                android:text="Task Detail"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_below="@id/add_task_due_date"
+                android:paddingBottom="5dp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/_30sdp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100sdp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/add_task_details"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Task Details"
+                android:gravity="start"
+                android:inputType="textCapWords"
+                android:padding="10dp"
+                android:layout_below="@id/detail_title"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:background="@drawable/custom_textbox"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/add_task_assign"
+                android:text="Assign Task"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_below="@id/add_task_details"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:layout_marginTop="@dimen/_10sdp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/add_task_no_people"
+                android:text="No Team Member To Show"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textSize="@dimen/title_text"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_below="@id/add_task_assign"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:layout_marginTop="@dimen/_10sdp"/>
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_150sdp"
+                android:id="@+id/add_task_listview"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:layout_below="@id/add_task_assign"
+                android:padding="10dp"
+                android:scrollbarThumbVertical="@null"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="@dimen/_200sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@id/add_task_listview"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:text="Add Task"
+                app:strokeColor="@color/colorPrimaryDark"
+                app:strokeWidth="1dp"
+                android:id="@+id/add_task_btn"/>
+
+        </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

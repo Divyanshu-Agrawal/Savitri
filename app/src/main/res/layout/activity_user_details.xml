@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".activities.UserDetails">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="User Details"
+        android:theme="@style/toolbarTheme"
+        app:titleTextColor="@color/toolbarTextColor"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_150sdp"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorPrimaryDark"
+            android:padding="2dp"
+            android:src="@drawable/add_user_placeholder"
+            android:id="@+id/user_profile"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/user_profile"
+            android:id="@+id/user_name"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Enter Name"
+            android:inputType="textCapWords"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout"
+            android:layout_below="@+id/user_name"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="@dimen/_30sdp">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/_40sdp"
+                android:id="@+id/user_dob"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Enter DOB"
+                android:inputType="date"
+                android:focusable="false"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:background="@drawable/custom_textbox"/>
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/_40sdp"
+                android:id="@+id/user_gender"
+                android:spinnerMode="dropdown"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:background="@drawable/custom_textbox"/>
+
+        </LinearLayout>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/layout"
+            android:id="@+id/user_designation"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Enter Designation"
+            android:inputType="textCapWords"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/user_designation"
+            android:id="@+id/user_email"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Enter Email"
+            android:inputType="textEmailAddress"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/user_detail_next_btn"
+            android:layout_below="@id/user_email"
+            android:layout_marginTop="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            app:strokeColor="@color/colorPrimaryDark"
+            app:strokeWidth="1dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="5dp"
+            app:elevation="5dp"
+            app:rippleColor="#80D44D4D"
+            android:theme="@style/Widget.AppCompat.Button.Colored"
+            android:text="Next"
+            android:textColor="@color/button_text"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.TaskDetail">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/toolbarTheme"
+        app:titleTextColor="@color/toolbarTextColor"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:focusableInTouchMode="true"
+        android:layout_above="@id/task_layout"
+        android:descendantFocusability="beforeDescendants"
+        android:scrollbarThumbVertical="@null">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_40sdp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Task Name"
+                android:paddingBottom="5dp"
+                android:id="@+id/name_title"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name_title"
+                android:id="@+id/task_name"
+                android:textSize="@dimen/title_text"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/task_name"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:id="@+id/note_title"
+                android:text="Task Details"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/note_title"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:id="@+id/task_details"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/task_details"
+                android:id="@+id/date_title"
+                android:text="Due Date"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/date_title"
+                android:id="@+id/task_due_date"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/task_due_date"
+                android:id="@+id/status_title"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingStart="10dp"
+                android:text="Status"
+                android:paddingEnd="10dp"
+                android:visibility="visible"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/status_title"
+                android:id="@+id/task_status"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:paddingStart="10dp"
+                android:visibility="visible"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/task_status"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Assigned By"
+                android:paddingBottom="5dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:visibility="gone"
+                android:id="@+id/assign_by_title" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/assign_by_title"
+                android:id="@+id/task_assigned_by"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/task_assigned_by"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Assigned To"
+                android:paddingBottom="5dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:id="@+id/assign_title" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_200sdp"
+                android:layout_below="@id/assign_title"
+                android:dividerHeight="0dp"
+                android:divider="@null"
+                android:scrollbars="none"
+                android:id="@+id/assigned_to_listview"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:id="@+id/task_layout"
+        android:background="@android:color/holo_green_dark">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            app:backgroundTint="@android:color/holo_green_dark"
+            app:cornerRadius="0dp"
+            android:id="@+id/complete_task_btn"
+            app:elevation="0dp"
+            app:iconTint="@android:color/white"
+            app:icon="@drawable/tick"
+            android:text="Complete Task"
+            app:iconGravity="textStart"
+            app:iconPadding="10dp"
+            app:iconSize="20dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            app:backgroundTint="@android:color/holo_green_dark"
+            app:cornerRadius="0dp"
+            android:id="@+id/assign_task_btn"
+            app:elevation="0dp"
+            app:iconTint="@android:color/white"
+            app:icon="@drawable/assign_icon"
+            android:text="Assign Task"
+            app:iconGravity="textStart"
+            app:iconPadding="10dp"
+            app:iconSize="20dp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

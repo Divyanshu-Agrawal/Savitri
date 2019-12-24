@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_300sdp"
+    android:layout_marginStart="@dimen/_10sdp"
+    android:layout_marginEnd="@dimen/_10sdp"
+    android:background="@drawable/dialog_background">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_30sdp"
+        android:id="@+id/title"
+        android:text="Assign People"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/title_text"
+        android:gravity="center"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_200sdp"
+        android:id="@+id/assign_people_listview"
+        android:divider="@null"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:dividerHeight="0dp"
+        android:layout_below="@id/title"
+        android:scrollbarThumbVertical="@null"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress_bar"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/no_people"
+        android:text="Nothing Here"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/id"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancel_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/_30sdp"
+            app:backgroundTint="@android:color/transparent"
+            android:text="Cancel"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/assign_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            app:backgroundTint="@android:color/transparent"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:text="Assign"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimaryDark" />
+
+    </LinearLayout>
+
+</RelativeLayout>

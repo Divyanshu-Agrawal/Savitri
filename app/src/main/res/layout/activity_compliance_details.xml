@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ComplianceDetails">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Compliances"
+        app:titleTextColor="@color/button_text"
+        android:theme="@style/toolbarTheme"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants"
+        android:layout_below="@id/toolbar"
+        android:scrollbarThumbVertical="@null">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_40sdp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Compliance Name"
+                android:paddingBottom="5dp"
+                android:id="@+id/name_title"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/name_title"
+                android:id="@+id/compliance_name"
+                android:textSize="@dimen/title_text"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/valid_layout"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:id="@+id/note_title"
+                android:text="Additional Notes"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/note_title"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:id="@+id/compliance_notes"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/compliance_name"
+                android:id="@+id/issueauth_title"
+                android:text="Issuing Authority"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/issueauth_title"
+                android:id="@+id/compliance_issue_auth"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/compliance_issue_auth"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Reference No."
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:id="@+id/ref_no_title"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ref_no_title"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/title_text"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:id="@+id/compliance_ref_no"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/compliance_notes"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Added On"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:paddingBottom="5dp"
+                android:id="@+id/added_on_title"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/added_on_title"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:id="@+id/compliance_added_on"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/compliance_ref_no"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:id="@+id/valid_title">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Valid From"
+                    android:paddingBottom="5dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:id="@+id/valid_from_title"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:id="@+id/valid_to_title"
+                    android:paddingBottom="5dp"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:text="Valid Upto"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/valid_layout"
+                android:layout_below="@id/valid_title">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/title_text"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:id="@+id/compliance_valid_from"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/title_text"
+                    android:textColor="@android:color/black"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:id="@+id/compliance_valid_upto"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/compliance_added_on"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Attached Certificates"
+                android:paddingBottom="5dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:id="@+id/cert_title" />
+
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_300sdp"
+                android:layout_below="@id/cert_title"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:dividerHeight="0dp"
+                android:divider="@null"
+                android:scrollbars="none"
+                android:id="@+id/certificate_listview"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

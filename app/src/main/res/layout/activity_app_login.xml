@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".activities.AppLogin">
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress_bar"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/_50sdp"
+        android:id="@+id/phone_number_layout"
+        android:visibility="visible"
+        android:focusableInTouchMode="true"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_150sdp"
+            android:id="@+id/login_image"
+            android:src="@drawable/savitri_logo"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/login_image"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:id="@+id/user_phone"
+            android:hint="Enter Phone Number"
+            android:inputType="phone"
+            android:maxLength="10"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:background="@drawable/custom_textbox"
+            tools:ignore="Autofill" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/proceed_btn"
+            android:layout_below="@id/user_phone"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_100sdp"
+            app:strokeColor="@color/colorPrimaryDark"
+            app:strokeWidth="1dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="5dp"
+            app:elevation="5dp"
+            app:rippleColor="#80D44D4D"
+            android:theme="@style/Widget.AppCompat.Button.Colored"
+            android:textColor="@color/button_text"
+            android:text="Proceed"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_layout"
+        android:paddingBottom="@dimen/_50sdp"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_150sdp"
+            android:id="@+id/image"
+            android:src="@drawable/savitri_logo"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/image"
+            android:id="@+id/user_password"
+            android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/forgot_password_btn"
+            android:layout_below="@id/user_password"
+            android:layout_centerHorizontal="true"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            app:backgroundTint="@android:color/transparent"
+            android:text="Forgot Password?"
+            app:rippleColor="#80D44D4D"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/login_btn"
+            android:layout_below="@id/user_password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_100sdp"
+            app:strokeColor="@color/colorPrimaryDark"
+            app:strokeWidth="1dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="5dp"
+            app:elevation="5dp"
+            app:rippleColor="#80D44D4D"
+            android:theme="@style/Widget.AppCompat.Button.Colored"
+            android:textColor="@color/button_text"
+            android:text="Login" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/_50sdp"
+        android:id="@+id/otp_layout"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_150sdp"
+            android:id="@+id/otp_image"
+            android:src="@drawable/savitri_logo"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/otp_image"
+            android:id="@+id/user_otp"
+            android:hint="Enter OTP"
+            android:inputType="phone"
+            android:maxLength="6"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/verify_btn"
+            android:layout_below="@id/user_otp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_100sdp"
+            app:strokeColor="@color/colorPrimaryDark"
+            app:strokeWidth="1dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="5dp"
+            app:elevation="5dp"
+            app:rippleColor="#80D44D4D"
+            android:theme="@style/Widget.AppCompat.Button.Colored"
+            android:text="Verify"
+            android:textColor="@color/button_text"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/resend_otp_btn"
+            android:layout_centerHorizontal="true"
+            android:text="Resend OTP"
+            android:layout_marginTop="@dimen/_10sdp"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimaryDark"
+            app:backgroundTint="@android:color/transparent"
+            android:visibility="gone"
+            android:layout_below="@id/verify_btn"/>
+
+        <TextView
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:id="@+id/resend_timer"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:layout_below="@id/verify_btn"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@android:color/transparent"
+            android:visibility="visible"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/_50sdp"
+        android:id="@+id/register_layout"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_150sdp"
+            android:id="@+id/register_image"
+            android:src="@drawable/savitri_logo"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/register_image"
+            android:id="@+id/user_new_password"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/user_new_password"
+            android:id="@+id/user_confirm_password"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/register_btn"
+            android:layout_below="@id/user_confirm_password"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_100sdp"
+            app:strokeColor="@color/colorPrimaryDark"
+            app:strokeWidth="1dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="5dp"
+            app:elevation="5dp"
+            app:rippleColor="#80D44D4D"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:text="Set Password"
+            android:textColor="@color/button_text"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

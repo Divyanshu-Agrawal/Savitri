@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Savitri</string>
+    <string name="title_activity_dashboard">Savitri</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="phone_address">+91 6260 9696 47</string>
+    <string name="contact_details">Contact Details</string>
+    <string name="web_address">www.aaptrix.com</string>
+    <string name="website">Website</string>
+    <string name="developed_by">Developed By</string>
+    <string name="mail_address">hello@aaptrix.com</string>
+    <string name="privacy_policy">Privacy Policy</string>
+</resources>

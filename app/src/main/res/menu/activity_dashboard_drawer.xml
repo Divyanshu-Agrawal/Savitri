@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/compliance"
+            android:title="Compliances"
+            android:icon="@drawable/compliance_icon_small"/>
+
+        <item
+            android:id="@+id/renewal"
+            android:title="Renewals"
+            android:icon="@drawable/renewal_icon"/>
+
+        <item
+            android:id="@+id/tasks"
+            android:title="Tasks"
+            android:icon="@drawable/tasks_icon"/>
+
+        <item
+            android:id="@+id/people"
+            android:title="People"
+            android:icon="@drawable/people_icon"/>
+
+        <item
+            android:icon="@drawable/history_icon_small"
+            android:title="History"
+            android:id="@+id/history"/>
+
+        <item
+            android:id="@+id/feedback"
+            android:title="Feedback"
+            android:icon="@drawable/feedback_icon_small"/>
+
+        <item
+            android:id="@+id/faqs"
+            android:title="FAQs"
+            android:icon="@drawable/faq_icon"/>
+    </group>
+
+</menu>

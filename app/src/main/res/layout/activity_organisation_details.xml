@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".activities.OrganisationDetails">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Organisation Details"
+        android:theme="@style/toolbarTheme"
+        app:titleTextColor="@color/toolbarTextColor"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants"
+        android:layout_below="@id/toolbar">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:paddingTop="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_10sdp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/organisation_name"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Organisation Name"
+            android:inputType="textCapWords"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80sdp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/organisation_details"
+            android:layout_below="@id/organisation_name"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Organisation Details"
+            android:inputType="textCapSentences|textMultiLine"
+            android:gravity="top"
+            android:padding="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/organisation_details"
+            android:id="@+id/organisation_type"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Organisation Type"
+            android:inputType="textCapWords"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/organisation_type"
+            android:id="@+id/organisation_landline"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Landline Number"
+            android:inputType="phone"
+            android:maxLength="11"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/organisation_landline"
+            android:id="@+id/organisation_address"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Organisation Address"
+            android:gravity="start"
+            android:inputType="textMultiLine|textCapSentences"
+            android:padding="10dp"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <Spinner
+            android:layout_width="@dimen/_135sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_below="@id/organisation_address"
+            android:id="@+id/organisation_state"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <Spinner
+            android:layout_width="@dimen/_135sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_below="@id/organisation_address"
+            android:layout_toEndOf="@id/organisation_state"
+            android:id="@+id/organisation_city"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="@dimen/_135sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/organisation_district"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_below="@id/organisation_state"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="District"
+            android:inputType="textCapWords"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <EditText
+            android:layout_width="@dimen/_135sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_below="@id/organisation_city"
+            android:id="@+id/organisation_pincode"
+            android:textColorHint="@color/hintcolor"
+            android:textColor="@color/colorPrimaryDark"
+            android:hint="Pincode"
+            android:inputType="number"
+            android:maxLength="6"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_toEndOf="@id/organisation_district"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/custom_textbox"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/register_org_btn"
+            android:layout_below="@id/tc_layout"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_centerHorizontal="true"
+            app:strokeColor="@color/colorPrimaryDark"
+            app:strokeWidth="1dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:cornerRadius="5dp"
+            app:elevation="5dp"
+            app:rippleColor="#80D44D4D"
+            android:theme="@style/Widget.AppCompat.Button.Colored"
+            android:text="Register"
+            android:textColor="@color/button_text"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/organisation_pincode"
+            android:layout_marginStart="@dimen/_25sdp"
+            android:checked="false"
+            android:id="@+id/tnc_checkbox"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tc_text"
+            android:layout_below="@id/organisation_pincode"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="By registring you are agreeing to our    "
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tc_text"
+            android:id="@+id/tc_layout"
+            android:layout_centerHorizontal="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"                app:backgroundTint="@android:color/transparent"
+                android:text="Terms and Service"
+                android:textAllCaps="false"
+                android:gravity="top|start"
+                android:textColor="@color/colorPrimaryDark"
+                android:id="@+id/terms_btn"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_toEndOf="@id/terms_btn"
+                android:text="and"
+                android:id="@+id/and"
+                android:textColor="@color/colorPrimaryDark"
+                android:gravity="center"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                app:backgroundTint="@android:color/transparent"
+                android:layout_toEndOf="@id/and"
+                android:text="Privacy Policy "
+                android:textColor="@color/colorPrimaryDark"
+                android:textAllCaps="false"
+                android:gravity="top|start"
+                android:id="@+id/privacy_btn"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/logged_user_image"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_80sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:src="@drawable/user_placeholder"
+            android:contentDescription="@string/nav_header_desc" />
+
+        <TextView
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/logged_user_image"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:background="@color/cardBackground"
+            android:textColor="@color/colorPrimaryDark"
+            android:id="@+id/plan_name"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/logged_user_name"
+            android:layout_toStartOf="@id/next"
+            android:layout_toEndOf="@id/logged_user_image"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:textSize="@dimen/title_text"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/logged_user_role"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logged_user_name"
+            android:layout_toStartOf="@id/next"
+            android:layout_toEndOf="@id/logged_user_image"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:textSize="@dimen/text"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/next_icon"
+            android:id="@+id/next"
+            android:tint="@color/colorPrimaryDark"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimaryDark"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

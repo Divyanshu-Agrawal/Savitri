@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".activities.AppInfo">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/app_info_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:theme="@style/toolbarTheme"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/privacy_policy_webview"
+        android:layout_below="@id/app_info_toolbar"
+        android:visibility="gone"/>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/relative_layout"
+        android:layout_below="@id/app_info_toolbar">
+
+        <ImageView
+            android:id="@+id/app_logo"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_80sdp"
+            android:src="@mipmap/ic_launcher"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_10sdp"/>
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/app_logo"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/link_color"/>
+
+        <TextView
+            android:id="@+id/privacy_policy"
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/version"
+            android:gravity="center_horizontal"
+            android:textSize="16sp"
+            android:autoLink="web"
+            android:text="@string/privacy_policy"
+            android:textColorLink="@color/link_color"
+            android:textColor="@color/link_color"/>
+
+        <TextView
+            android:id="@+id/developed_by"
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/privacy_policy"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/developed_by"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/link_color"/>
+
+        <ImageView
+            android:id="@+id/aaptrix_logo"
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="@dimen/_150sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/developed_by"
+            android:tint="@android:color/white"
+            android:src="@drawable/aaptrix_app_info"/>
+
+        <TextView
+            android:id="@+id/website_text"
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/aaptrix_logo"
+            android:text="@string/website"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/web_url"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_below="@id/website_text"
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            android:autoLink="web"
+            android:textColorLink="@color/link_color"
+            android:text="@string/web_address"/>
+
+        <TextView
+            android:id="@+id/contact_detail_text"
+            android:layout_width="@dimen/_200sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_below="@id/web_url"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/contact_details"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@color/app_info_color"/>
+
+        <TextView
+            android:id="@+id/contact_number"
+            android:layout_width="@dimen/_155sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_below="@id/contact_detail_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:autoLink="phone"
+            android:textColorLink="@color/link_color"
+            android:text="@string/phone_address"/>
+
+        <TextView
+            android:id="@+id/contact_email"
+            android:layout_width="@dimen/_155sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_below="@id/contact_number"
+            android:layout_centerHorizontal="true"
+            android:gravity="top|center_horizontal"
+            android:textSize="20sp"
+            android:autoLink="email"
+            android:textColorLink="@color/link_color"
+            android:text="@string/mail_address"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

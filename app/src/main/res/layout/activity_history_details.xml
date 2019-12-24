@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.HistoryDetails">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Compliances"
+        app:titleTextColor="@color/button_text"
+        android:theme="@style/toolbarTheme"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants"
+        android:scrollbarThumbVertical="@null">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/history_layout"
+            android:paddingBottom="@dimen/_40sdp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Compliance Name"
+                android:paddingBottom="5dp"
+                android:id="@+id/name_title"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/compliance_name"
+                android:textSize="@dimen/title_text"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/issueauth_title"
+                android:text="Issuing Authority"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/compliance_issue_auth"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Reference No."
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:id="@+id/ref_no_title"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/title_text"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:id="@+id/compliance_ref_no"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:id="@+id/note_title"
+                android:text="Additional Notes"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:id="@+id/compliance_notes"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Compliance History"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginTop="@dimen/_10sdp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
