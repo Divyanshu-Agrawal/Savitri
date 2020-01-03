@@ -4,220 +4,337 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.Dashboard"
-    android:background="@drawable/background"
     tools:showIn="@layout/app_bar_dashboard">
 
-    <androidx.gridlayout.widget.GridLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/grid_layout"
-        android:padding="10dp"
-        app:columnCount="2"
-        android:layout_marginTop="@dimen/_30sdp"
-        app:useDefaultMargins="true"
-        android:drawSelectorOnTop="true"
-        android:gravity="center"
-        android:focusable="true"
-        android:clickable="true">
+        android:layout_height="match_parent">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/_130sdp"
-            app:layout_columnWeight="1"
-            android:layout_margin="5dp"
-            app:layout_gravity="fill"
-            app:cardBackgroundColor="@color/cardBackground"
-            app:cardPreventCornerOverlap="true"
-            app:cardElevation="5dp">
-            <ImageButton
-                android:layout_width="@dimen/_90sdp"
-                android:layout_height="@dimen/_90sdp"
-                android:id="@+id/compliances_btn"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:src="@drawable/compliance_icon"
-                android:background="@android:color/transparent"
-                android:layout_gravity="center_horizontal"/>
-            <TextView
-                android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.gridlayout.widget.GridLayout
+                android:id="@+id/grid_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Compliances"
-                android:layout_marginBottom="20dp"
-                android:textSize="14sp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_gravity="bottom|center_horizontal"/>
-        </androidx.cardview.widget.CardView>
+                android:layout_marginTop="@dimen/_30sdp"
+                android:clickable="true"
+                android:drawSelectorOnTop="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="10dp"
+                app:columnCount="2"
+                app:useDefaultMargins="true">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/_130sdp"
-            app:layout_columnWeight="1"
-            app:layout_gravity="fill"
-            app:cardBackgroundColor="@color/cardBackground"
-            app:cardPreventCornerOverlap="true"
-            android:layout_margin="5dp"
-            app:cardElevation="5dp">
-            <ImageButton
-                android:layout_width="@dimen/_90sdp"
-                android:layout_height="@dimen/_90sdp"
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/renewal_btn"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:rotation="45"
-                android:src="@drawable/renewal_icon"
-                android:scaleType="centerInside"
-                android:background="@android:color/transparent"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Renewals"
-                android:layout_marginBottom="20dp"
-                android:textSize="14sp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_gravity="bottom|center_horizontal"/>
-        </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_130sdp"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/cardBackground"
+                    app:cardElevation="5dp"
+                    app:cardCornerRadius="5dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:contentPadding="5dp"
+                    app:layout_columnWeight="1"
+                    app:layout_gravity="fill">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/_130sdp"
-            app:layout_columnWeight="1"
-            app:layout_gravity="fill"
-            app:cardBackgroundColor="@color/cardBackground"
-            app:cardPreventCornerOverlap="true"
-            android:layout_margin="5dp"
-            app:cardElevation="5dp">
-            <ImageButton
-                android:id="@+id/tasks_btn"
-                android:layout_width="@dimen/_90sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_height="@dimen/_90sdp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/tasks_icon"
-                android:scaleType="centerInside"
-                android:background="@android:color/transparent"
-                android:padding="10dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tasks"
-                android:layout_marginBottom="20dp"
-                android:textSize="14sp"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_gravity="bottom|center_horizontal"/>
-        </androidx.cardview.widget.CardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_card">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/_130sdp"
-            app:layout_gravity="fill"
-            app:layout_columnWeight="1"
-            android:id="@+id/people_view"
-            app:cardBackgroundColor="@color/cardBackground"
-            app:cardPreventCornerOverlap="true"
-            android:layout_margin="5dp"
-            app:cardElevation="5dp">
-            <ImageButton
-                android:id="@+id/people_btn"
-                android:layout_width="@dimen/_90sdp"
-                android:layout_height="@dimen/_90sdp"
-                android:layout_gravity="center_horizontal"
-                android:padding="5dp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:src="@drawable/people_icon"
-                android:scaleType="centerInside"
-                android:background="@android:color/transparent"/>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/custom_layout"
+                            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="20dp"
-                android:text="People"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="14sp" />
-        </androidx.cardview.widget.CardView>
+                            <ImageButton
+                                android:id="@+id/compliances_btn"
+                                android:layout_width="@dimen/_90sdp"
+                                android:layout_height="@dimen/_90sdp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="@android:color/transparent"
+                                android:scaleType="fitCenter"
+                                android:tint="@color/colorPrimaryDark"
+                                android:src="@drawable/compliance_icon" />
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/_130sdp"
-            app:layout_gravity="fill"
-            app:cardBackgroundColor="@color/cardBackground"
-            app:layout_columnWeight="1"
-            app:cardPreventCornerOverlap="true"
-            android:layout_margin="5dp"
-            app:cardElevation="5dp">
-            <ImageButton
-                android:id="@+id/history_btn"
-                android:layout_width="@dimen/_90sdp"
-                android:layout_height="@dimen/_90sdp"
-                android:layout_gravity="center_horizontal"
-                android:padding="5dp"
-                android:scaleX="-1"
-                android:src="@drawable/history_icon"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:scaleType="centerInside"
-                android:background="@android:color/transparent"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/_15sdp"
+                                android:layout_gravity="bottom|center_horizontal"
+                                android:layout_marginBottom="20dp"
+                                android:text="Compliances"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="20dp"
-                android:text="History"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="14sp" />
-        </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_130sdp"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/cardBackground"
+                    app:cardElevation="5dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:contentPadding="5dp"
+                    app:cardCornerRadius="5dp"
+                    app:layout_columnWeight="1"
+                    app:layout_gravity="fill">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/_130sdp"
-            app:layout_gravity="fill"
-            android:id="@+id/feedback_view"
-            app:cardBackgroundColor="@color/cardBackground"
-            app:layout_columnWeight="1"
-            app:cardPreventCornerOverlap="true"
-            android:layout_margin="5dp"
-            app:cardElevation="5dp">
-            <ImageButton
-                android:id="@+id/feedback_btn"
-                android:layout_width="@dimen/_90sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_height="@dimen/_90sdp"
-                android:layout_gravity="center_horizontal"
-                android:padding="5dp"
-                android:src="@drawable/feedback_icon"
-                android:scaleType="centerInside"
-                android:background="@android:color/transparent"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_card">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="20dp"
-                android:text="Feedback"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="14sp" />
-        </androidx.cardview.widget.CardView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/custom_layout"
+                            android:orientation="vertical">
 
-    </androidx.gridlayout.widget.GridLayout>
+                            <ImageButton
+                                android:id="@+id/renewal_btn"
+                                android:layout_width="@dimen/_90sdp"
+                                android:layout_height="@dimen/_90sdp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="@android:color/transparent"
+                                android:rotation="45"
+                                android:tint="@color/colorPrimaryDark"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/renewal_icon" />
 
-    <com.google.android.material.button.MaterialButton
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_60sdp"
-        android:layout_marginStart="@dimen/_5sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        app:backgroundTint="@color/colorPrimary"
-        app:cornerRadius="5dp"
-        app:elevation="5dp"
-        app:rippleColor="#80D44D4D"
-        android:theme="@style/Widget.AppCompat.Button.Colored"
-        android:layout_below="@id/grid_layout"
-        android:layout_marginTop="@dimen/_30sdp"
-        android:text="Upgrade Plan"
-        android:textColor="@color/button_text"
-        android:textSize="18sp"
-        android:id="@+id/upgrade_plan_btn"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/_15sdp"
+                                android:layout_gravity="bottom|center_horizontal"
+                                android:layout_marginBottom="20dp"
+                                android:text="Renewals"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_130sdp"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/cardBackground"
+                    app:cardElevation="5dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:contentPadding="5dp"
+                    app:cardCornerRadius="5dp"
+                    app:layout_columnWeight="1"
+                    app:layout_gravity="fill">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_card">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/custom_layout"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/tasks_btn"
+                                android:layout_width="@dimen/_90sdp"
+                                android:layout_height="@dimen/_90sdp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="@android:color/transparent"
+                                android:padding="10dp"
+                                android:tint="@color/colorPrimaryDark"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/tasks_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/_15sdp"
+                                android:layout_gravity="bottom|center_horizontal"
+                                android:layout_marginBottom="20dp"
+                                android:text="Tasks"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/people_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_130sdp"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/cardBackground"
+                    app:cardElevation="5dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:contentPadding="5dp"
+                    app:cardCornerRadius="5dp"
+                    app:layout_columnWeight="1"
+                    app:layout_gravity="fill">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_card">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/custom_layout"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/people_btn"
+                                android:layout_width="@dimen/_90sdp"
+                                android:layout_height="@dimen/_90sdp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="@android:color/transparent"
+                                android:padding="5dp"
+                                android:tint="@color/colorPrimaryDark"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/people_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/_15sdp"
+                                android:layout_gravity="bottom|center_horizontal"
+                                android:layout_marginBottom="20dp"
+                                android:text="People"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_130sdp"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/cardBackground"
+                    app:cardElevation="5dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:contentPadding="5dp"
+                    app:cardCornerRadius="5dp"
+                    app:layout_columnWeight="1"
+                    app:layout_gravity="fill">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_card">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/custom_layout"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/history_btn"
+                                android:layout_width="@dimen/_90sdp"
+                                android:layout_height="@dimen/_90sdp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="@android:color/transparent"
+                                android:padding="5dp"
+                                android:tint="@color/colorPrimaryDark"
+                                android:scaleType="centerInside"
+                                android:scaleX="-1"
+                                android:src="@drawable/history_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/_15sdp"
+                                android:layout_gravity="bottom|center_horizontal"
+                                android:layout_marginBottom="20dp"
+                                android:text="History"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/feedback_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_130sdp"
+                    android:layout_margin="5dp"
+                    app:cardBackgroundColor="@color/cardBackground"
+                    app:cardElevation="5dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:contentPadding="5dp"
+                    app:cardCornerRadius="5dp"
+                    app:layout_columnWeight="1"
+                    app:layout_gravity="fill">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_card">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/custom_layout"
+                            android:orientation="vertical">
+
+                            <ImageButton
+                                android:id="@+id/feedback_btn"
+                                android:layout_width="@dimen/_90sdp"
+                                android:layout_height="@dimen/_90sdp"
+                                android:layout_gravity="center_horizontal"
+                                android:background="@android:color/transparent"
+                                android:padding="5dp"
+                                android:tint="@color/colorPrimaryDark"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/feedback_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/_15sdp"
+                                android:layout_gravity="bottom|center_horizontal"
+                                android:layout_marginBottom="20dp"
+                                android:text="Feedback"
+                                android:textColor="@color/colorPrimaryDark"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </androidx.gridlayout.widget.GridLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/upgrade_plan_btn"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_60sdp"
+                android:layout_below="@id/grid_layout"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:text="Upgrade Plan"
+                android:textColor="@color/button_text"
+                android:textSize="18sp"
+                android:theme="@style/Widget.AppCompat.Button.Colored"
+                app:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="5dp"
+                app:elevation="5dp"
+                app:rippleColor="#80D44D4D" />
+
+        </RelativeLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#FAAF3B</color>
-    <color name="colorPrimaryDark">#D44D4D</color>
+    <color name="colorPrimaryDark">#B42524</color>
     <color name="colorAccent">#FAAF3B</color>
     <color name="button_text">#FFFFFF</color>
     <color name="toolbarTextColor">#FFFFFF</color>
-    <color name="hintcolor">#C56D6D</color>
+    <color name="hintcolor">@android:color/darker_gray</color>
     <color name="link_color">#FFFFFF</color>
     <color name="app_info_color">#FFFFFF</color>
     <color name="cardBackground">#FDF0D9</color>
+    <color name="seperater">#80B42524</color>
 </resources>

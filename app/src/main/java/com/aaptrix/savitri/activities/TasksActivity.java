@@ -5,6 +5,8 @@ import com.aaptrix.savitri.adapter.TasksAdapter;
 import com.aaptrix.savitri.databeans.TasksData;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -20,6 +22,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,10 +32,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,12 +51,24 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Locale;
 
+import static com.aaptrix.savitri.session.SharedPrefsNames.FLAG;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_PLAN_TYPE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_NAME;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_ASSIGN;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DATE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DETAIL;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_NAME;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_PREFS;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 import static java.security.AccessController.getContext;
 
@@ -64,8 +81,9 @@ public class TasksActivity extends AppCompatActivity {
 	SwipeRefreshLayout swipeRefreshLayout;
 	TasksAdapter adapter;
 	ArrayList<TasksData> tasksArray = new ArrayList<>();
-	String strOrgId, strSessionId, strUserId, strUserRole;
+	String strOrgId, strSessionId, strUserId, strUserRole, strPlan, strUserName;
 	FloatingActionButton addTasks;
+	RelativeLayout layout;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +99,15 @@ public class TasksActivity extends AppCompatActivity {
 		listView = findViewById(R.id.tasks_listview);
 		swipeRefreshLayout = findViewById(R.id.swipe_refresh);
 		addTasks = findViewById(R.id.add_tasks);
+		layout = findViewById(R.id.layout);
 		
 		SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		strOrgId = sp.getString(KEY_ORG_ID, "");
 		strSessionId = sp.getString(KEY_SESSION_ID, "");
 		strUserId = sp.getString(KEY_USER_ID, "");
 		strUserRole = sp.getString(KEY_USER_ROLE, "");
+		strUserName = sp.getString(KEY_USER_NAME, "");
+		strPlan = sp.getString(KEY_ORG_PLAN_TYPE, "");
 		progressBar.setVisibility(View.VISIBLE);
 		setTasks();
 		swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -110,15 +131,19 @@ public class TasksActivity extends AppCompatActivity {
 			noTasks.setVisibility(View.GONE);
 			fetchTasks();
 		} else {
-			Toast.makeText(this, "Please connect to internet for better experience", Toast.LENGTH_SHORT).show();
+			Snackbar snackbar = Snackbar.make(layout, "No Internet Connection", Snackbar.LENGTH_INDEFINITE)
+					.setActionTextColor(Color.WHITE)
+					.setAction("Ok", null);
+			snackbar.show();
 			try {
 				FileNotFoundException fe = new FileNotFoundException();
 				File directory = this.getFilesDir();
 				ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(directory, "tasksData")));
 				String json = in.readObject().toString();
 				in.close();
+				Log.e("tasks", json);
 				JSONObject jsonObject = new JSONObject(json);
-				JSONArray jsonArray = jsonObject.getJSONArray("alltasks");
+				JSONArray jsonArray = jsonObject.getJSONArray("allTasks");
 				for (int i = 0; i < jsonArray.length(); i++) {
 					JSONObject jObject = jsonArray.getJSONObject(i);
 					TasksData data = new TasksData();
@@ -128,6 +153,8 @@ public class TasksActivity extends AppCompatActivity {
 					data.setTaskDueDate(jObject.getString("tasks_details_due_date"));
 					data.setAssignedBy(jObject.getString("users_details_id"));
 					data.setStatus(jObject.getString("tasks_assign_status"));
+					data.setAssignedByName(jObject.getString("users_name"));
+					data.setAssignedTo(jObject.toString());
 					tasksArray.add(data);
 				}
 				throw fe;
@@ -171,7 +198,7 @@ public class TasksActivity extends AppCompatActivity {
 							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 							startActivity(intent);
 							finish();
-						} else if (result.contains("{\"allTasks\":null}")) {
+						} else if (result.contains("{\"allTasks\":null}") || result.isEmpty()) {
 							noTasks.setVisibility(View.VISIBLE);
 							progressBar.setVisibility(View.GONE);
 						} else {
@@ -204,6 +231,29 @@ public class TasksActivity extends AppCompatActivity {
 	}
 	
 	private void listItem() {
+		SharedPreferences taskPrefs = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
+		if (taskPrefs.getBoolean(FLAG, false)) {
+			TasksData data = new TasksData();
+			data.setTaskId(null);
+			data.setTaskName(taskPrefs.getString(TASK_NAME, ""));
+			data.setTaskDesc(taskPrefs.getString(TASK_DETAIL, ""));
+			data.setTaskDueDate(taskPrefs.getString(TASK_DATE, ""));
+			data.setAssignedBy(strUserId);
+			data.setStatus(null);
+			data.setAssignedByName(strUserName);
+			data.setAssignedTo(taskPrefs.getString(TASK_ASSIGN, ""));
+			tasksArray.add(data);
+		}
+		Collections.sort(tasksArray, (o1, o2) -> {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+			try {
+				return sdf.parse(o1.getTaskDueDate()).compareTo(sdf.parse(o2.getTaskDueDate()));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			return 0;
+		});
+		Collections.reverse(tasksArray);
 		progressBar.setVisibility(View.GONE);
 		swipeRefreshLayout.setRefreshing(false);
 		adapter = new TasksAdapter(this, R.layout.list_renewal_status, tasksArray);

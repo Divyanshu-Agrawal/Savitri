@@ -1,5 +1,6 @@
 package com.aaptrix.savitri.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,8 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,11 +37,21 @@ import java.util.ArrayList;
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.adapter.RenewalStatusAdapter;
 import com.aaptrix.savitri.databeans.ComplianceData;
+import com.aaptrix.savitri.fragment.ExpiredRenewalsFragment;
+import com.aaptrix.savitri.fragment.NewRenewalFragment;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
+import com.google.android.material.tabs.TabLayout;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
+
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -54,13 +69,11 @@ import static java.security.AccessController.getContext;
 public class RenewalActivity extends AppCompatActivity {
 	
 	Toolbar toolbar;
-	ArrayList<ComplianceData> renewalArray = new ArrayList<>();
-	RenewalStatusAdapter adapter;
-	ListView listView;
-	TextView noStatus;
-	ProgressBar progressBar;
-	SwipeRefreshLayout swipeRefreshLayout;
+	TabLayout tabLayout;
+	ViewPager pager;
 	String strOrgId, strSessionId;
+	ImageView expiredImage;
+	TextView expiredText;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,167 +83,95 @@ public class RenewalActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayShowHomeEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		noStatus = findViewById(R.id.no_renewal);
-		progressBar = findViewById(R.id.progress_bar);
-		listView = findViewById(R.id.renewal_listview);
-		swipeRefreshLayout = findViewById(R.id.swipe_refresh);
-		
 		SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		strOrgId = sp.getString(KEY_ORG_ID, "");
 		strSessionId = sp.getString(KEY_SESSION_ID, "");
-		progressBar.setVisibility(View.VISIBLE);
-		setRenewalStatus();
-		
-		swipeRefreshLayout.setOnRefreshListener(() -> {
-			swipeRefreshLayout.setRefreshing(true);
-			listView.setEnabled(false);
-			renewalArray.clear();
-			setRenewalStatus();
-		});
-	}
-	
-	private void setRenewalStatus() {
+		pager = findViewById(R.id.viewpager);
+		tabLayout = findViewById(R.id.tablayout);
+		tabLayout.setupWithViewPager(pager);
+		tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+		View renewalView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+				.inflate(R.layout.custom_tab, null, false);
+
+		View expiredView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+				.inflate(R.layout.custom_tab, null, false);
+
+		TextView renewalText = renewalView.findViewById(R.id.text);
+		renewalText.setText("Renewals");
+
+		expiredText = expiredView.findViewById(R.id.text);
+		expiredImage = expiredView.findViewById(R.id.image);
+		expiredText.setText("Expired");
+
+		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+		pager.setAdapter(adapter);
+		adapter.notifyDataSetChanged();
+		tabLayout.getTabAt(0).setCustomView(renewalView);
+		tabLayout.getTabAt(1).setCustomView(expiredView);
 		if (checkConnection()) {
-			noStatus.setVisibility(View.GONE);
 			fetchRenewalStatus();
 		} else {
-			Toast.makeText(this, "Please connect to internet for better experience", Toast.LENGTH_SHORT).show();
 			try {
-				FileNotFoundException fe = new FileNotFoundException();
-				File directory = this.getFilesDir();
-				ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(directory, "renewalStatusData")));
+				File directory = getFilesDir();
+				ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(directory, "expiredRenewalData")));
 				String json = in.readObject().toString();
 				in.close();
-				JSONObject jsonObject = new JSONObject(json);
-				JSONArray jsonArray = jsonObject.getJSONArray("");
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject jObject = jsonArray.getJSONObject(i);
-					ComplianceData data = new ComplianceData();
-					data.setId(jObject.getString("compliance_id"));
-					data.setName(jObject.getString("compliance_name"));
-					data.setIssueAuth(jObject.getString("compliance_issuing_auth"));
-					data.setAddedDate(jObject.getString("color"));
-					data.setCertificate(jObject.getString("compliance_certificates"));
-					data.setNotes(jObject.getString("compliance_notes"));
-					data.setOtherAuth(jObject.getString("compliance_issuing_auth_other"));
-					data.setRefNo(jObject.getString("compliance_reference_no"));
-					data.setValidfrom(jObject.getString("compliance_valid_from"));
-					data.setValidTo(jObject.getString("compliance_valid_upto"));
-					data.setAssignedBy(jObject.getString("users_details_id"));
-					data.setAssignedByName(jObject.getString("users_name"));
-					data.setAssignedTo(jObject.toString());
-					renewalArray.add(data);
+				if (!json.isEmpty()) {
+					expiredImage.setVisibility(View.VISIBLE);
+					expiredText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 				}
-				throw fe;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (renewalArray.size() == 0) {
-				noStatus.setVisibility(View.VISIBLE);
-				progressBar.setVisibility(View.GONE);
-			} else {
-				listItem();
+		}
+		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+			@Override
+			public void onTabSelected(TabLayout.Tab tab) {
+				pager.setCurrentItem(tab.getPosition(), true);
+				if (tab.getPosition() == 1) {
+					expiredImage.setVisibility(View.GONE);
+					expiredText.setGravity(Gravity.CENTER);
+				}
+			}
+
+			@Override
+			public void onTabUnselected(TabLayout.Tab tab) {
+
+			}
+
+			@Override
+			public void onTabReselected(TabLayout.Tab tab) {
+
+			}
+		});
+
+	}
+
+	private class ViewPagerAdapter extends FragmentStatePagerAdapter {
+
+		ViewPagerAdapter(FragmentManager manager) {
+			super(manager);
+		}
+
+		@NonNull
+		@Override
+		public Fragment getItem(int position) {
+			switch (position) {
+				case 0:
+					return new NewRenewalFragment();
+				case 1:
+					return new ExpiredRenewalsFragment();
+				default:
+					return null;
 			}
 		}
-	}
-	
-	private void fetchRenewalStatus() {
-		new Thread(() -> {
-			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost(URLs.ALL_RENEWAL_STATUS);
-				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-				entityBuilder.addTextBody("org_details_id", strOrgId);
-				entityBuilder.addTextBody("app_session_id", strSessionId);
-				HttpEntity entity = entityBuilder.build();
-				httppost.setEntity(entity);
-				HttpResponse response = httpclient.execute(httppost);
-				HttpEntity httpEntity = response.getEntity();
-				String result = EntityUtils.toString(httpEntity);
-				Handler handler = new Handler(Looper.getMainLooper());
-				handler.post(() -> {
-					try {
-						Log.e("res", result);
-						if (result.contains("\"success\":false,\"msg\":\"Session Expire\"")) {
-							progressBar.setVisibility(View.GONE);
-							Toast.makeText(this, "Your Session is expired please login again", Toast.LENGTH_SHORT).show();
-							SharedPrefsManager.getInstance(this).logout();
-							Intent intent = new Intent(this, AppLogin.class);
-							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							startActivity(intent);
-							finish();
-						} else if (result.equals("{\"allRenews\":null}")) {
-							noStatus.setVisibility(View.VISIBLE);
-							progressBar.setVisibility(View.GONE);
-						} else {
-							JSONObject jsonObject = new JSONObject(result);
-							cacheJson(jsonObject);
-							JSONArray jsonArray = jsonObject.getJSONArray("allRenews");
-							for (int i = 0; i < jsonArray.length(); i++) {
-								JSONObject jObject = jsonArray.getJSONObject(i);
-								ComplianceData data = new ComplianceData();
-								data.setId(jObject.getString("compliance_id"));
-								data.setName(jObject.getString("compliance_name"));
-								data.setIssueAuth(jObject.getString("compliance_issuing_auth"));
-								data.setAddedDate(jObject.getString("color"));
-								data.setCertificate(jObject.getString("compliance_certificates"));
-								data.setNotes(jObject.getString("compliance_notes"));
-								data.setOtherAuth(jObject.getString("compliance_issuing_auth_other"));
-								data.setRefNo(jObject.getString("compliance_reference_no"));
-								data.setValidfrom(jObject.getString("compliance_valid_from"));
-								data.setValidTo(jObject.getString("compliance_valid_upto"));
-								data.setAssignedBy(jObject.getString("users_details_id"));
-								data.setAssignedByName(jObject.getString("users_name"));
-								data.setAssignedTo(jObject.toString());
-								renewalArray.add(data);
-							}
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-						noStatus.setVisibility(View.VISIBLE);
-						progressBar.setVisibility(View.GONE);
-					}
-					listItem();
-				});
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}).start();
-	}
-	
-	private void listItem() {
-		progressBar.setVisibility(View.GONE);
-		swipeRefreshLayout.setRefreshing(false);
-		adapter = new RenewalStatusAdapter(this, R.layout.list_renewal_status, renewalArray);
-		listView.setAdapter(adapter);
-		listView.setEnabled(true);
-		adapter.notifyDataSetChanged();
-	}
-	
-	private void cacheJson(final JSONObject jsonObject) {
-		new Thread(() -> {
-			ObjectOutput out;
-			String data = jsonObject.toString();
-			try {
-				if (getContext() != null) {
-					File directory = this.getFilesDir();
-					directory.mkdir();
-					out = new ObjectOutputStream(new FileOutputStream(new File(directory, "renewalStatusData")));
-					out.writeObject(data);
-					out.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}).start();
-	}
-	
-	public boolean checkConnection() {
-		ConnectivityManager connec;
-		connec = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		assert connec != null;
-		return connec.getActiveNetworkInfo() != null && connec.getActiveNetworkInfo().isAvailable() && connec.getActiveNetworkInfo().isConnectedOrConnecting();
+
+		@Override
+		public int getCount() {
+			return 2;
+		}
+
 	}
 	
 	@Override
@@ -244,5 +185,39 @@ public class RenewalActivity extends AppCompatActivity {
 			onBackPressed();
 		}
 		return true;
+	}
+
+    private void fetchRenewalStatus() {
+		new Thread(() -> {
+			try {
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpPost httppost = new HttpPost(URLs.EXP_RENEWAL_STATUS);
+				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+				entityBuilder.addTextBody("org_details_id", strOrgId);
+				entityBuilder.addTextBody("app_session_id", strSessionId);
+				HttpEntity entity = entityBuilder.build();
+				httppost.setEntity(entity);
+				HttpResponse response = httpclient.execute(httppost);
+				HttpEntity httpEntity = response.getEntity();
+				String result = EntityUtils.toString(httpEntity);
+				Handler handler = new Handler(Looper.getMainLooper());
+				handler.post(() -> {
+					if (!result.contains("{\"allRenews\":null}") || !result.contains("\"success\":false,\"msg\":\"Session Expire\"")) {
+						expiredImage.setVisibility(View.VISIBLE);
+						expiredText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}).start();
+	}
+
+	private boolean checkConnection() {
+		ConnectivityManager connec;
+		connec = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		assert connec != null;
+		return connec.getActiveNetworkInfo() != null && connec.getActiveNetworkInfo().isAvailable() && connec.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 }

@@ -27,13 +27,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar"
-        android:focusableInTouchMode="true"
-        android:descendantFocusability="beforeDescendants"
         android:scrollbarThumbVertical="@null">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:descendantFocusability="beforeDescendants"
             android:orientation="vertical"
             android:id="@+id/history_layout"
             android:paddingBottom="@dimen/_40sdp">
@@ -121,6 +121,7 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="5dp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_10sdp"/>
 
         </LinearLayout>

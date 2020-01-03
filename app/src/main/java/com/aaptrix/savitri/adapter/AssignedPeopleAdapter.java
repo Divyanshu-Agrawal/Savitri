@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -37,8 +38,8 @@ public class AssignedPeopleAdapter extends ArrayAdapter<String> {
 		view = inflater.inflate(resource, null);
 		TextView assignedPeople = view.findViewById(R.id.assigned_people);
 		LinearLayout layout = view.findViewById(R.id.people_layout);
-		CheckBox checkBox = view.findViewById(R.id.assign_checkbox);
-		checkBox.setVisibility(View.GONE);
+		RelativeLayout relativeLayout = view.findViewById(R.id.relative_layout);
+		relativeLayout.setVisibility(View.GONE);
 		layout.setVisibility(View.VISIBLE);
 		assignedPeople.setText(nameArray.get(position));
 		return view;

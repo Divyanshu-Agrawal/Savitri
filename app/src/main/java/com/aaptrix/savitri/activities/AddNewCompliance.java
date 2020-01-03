@@ -7,8 +7,10 @@ import android.app.DatePickerDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
+import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aaptrix.savitri.asyncclass.UploadCompliance;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
@@ -42,8 +45,11 @@ import java.util.Objects;
 
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.session.FileUtil;
-import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -55,10 +61,21 @@ import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.mime.HttpMultipartMode;
 import cz.msebera.android.httpclient.entity.mime.MultipartEntityBuilder;
-import cz.msebera.android.httpclient.entity.mime.content.FileBody;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.util.EntityUtils;
+import id.zelory.compressor.Compressor;
 
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_ADDED;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_AUTH;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_CERT;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_NAME;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_NOTES;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_OTHER_AUTH;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_PREFS;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_REF;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_VALID_FROM;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_VALID_TO;
+import static com.aaptrix.savitri.session.SharedPrefsNames.FLAG;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
@@ -68,7 +85,7 @@ public class AddNewCompliance extends AppCompatActivity {
 	
 	EditText complianceName, complianceRefNo, complianceNotes, validFrom, validTo, otherIssueAuth;
 	Spinner issuingAuth;
-	String strIssueAuth, strValidFrom = "", strValidUpto = "", strOrgId, strUserId;
+	String strIssueAuth, strValidFrom = "", strValidUpto = "", strOrgId, strUserId, strSessionId;
 	Toolbar toolbar;
 	ProgressBar progressBar;
 	MaterialButton addCompliance;
@@ -76,9 +93,11 @@ public class AddNewCompliance extends AppCompatActivity {
 	TextView certCount;
 	ArrayList<String> issueAuth = new ArrayList<>();
 	ArrayList<File> filepath = new ArrayList<>();
-	Calendar myCalendar = Calendar.getInstance();
+	Calendar fromCalendar = Calendar.getInstance();
+	Calendar uptoCalendar = Calendar.getInstance();
 	DatePickerDialog.OnDateSetListener validFromDate, validUptoDate;
 	ArrayAdapter<String> issueAuthAdapter;
+	View v;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +121,10 @@ public class AddNewCompliance extends AppCompatActivity {
 		uploadCertificate = findViewById(R.id.add_compliance_certificate);
 		certCount = findViewById(R.id.certificate_count);
 		otherIssueAuth = findViewById(R.id.add_compliance_other_auth);
-		strOrgId = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE).getString(KEY_ORG_ID, "");
-		strUserId = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE).getString(KEY_USER_ID, "");
+		SharedPreferences preferences = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+		strOrgId = preferences.getString(KEY_ORG_ID, "");
+		strUserId = preferences.getString(KEY_USER_ID, "");
+		strSessionId = preferences.getString(KEY_SESSION_ID, "");
 		issueAuth.add("Select Issuing Authority");
 		issueAuth.add("Other");
 		issueAuthAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, issueAuth);
@@ -144,7 +165,18 @@ public class AddNewCompliance extends AppCompatActivity {
 		issuingAuth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.hintcolor));
+				if (view != null) {
+					v = view;
+					if (position == 0)
+						((TextView) view).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				} else {
+					if (position == 0)
+						((TextView) v).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) v).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				}
 				if (position == 0) {
 					otherIssueAuth.setVisibility(View.GONE);
 					strIssueAuth = "";
@@ -176,40 +208,47 @@ public class AddNewCompliance extends AppCompatActivity {
 		});
 		
 		validFromDate = (view, year, monthOfYear, dayOfMonth) -> {
-			myCalendar.set(Calendar.YEAR, year);
-			myCalendar.set(Calendar.MONTH, monthOfYear);
-			myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			fromCalendar.set(Calendar.YEAR, year);
+			fromCalendar.set(Calendar.MONTH, monthOfYear);
+			fromCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 			String myFormat = "dd-MM-yyyy"; //In which you need put here
 			SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-			validFrom.setText(sdf.format(myCalendar.getTime()));
+			validFrom.setText(sdf.format(fromCalendar.getTime()));
 			myFormat = "yyyy-MM-dd";
 			sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
-			strValidFrom = sdf.format(myCalendar.getTime());
+			strValidFrom = sdf.format(fromCalendar.getTime());
 		};
 		
 		validFrom.setOnClickListener(v -> {
-			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validFromDate, myCalendar
-					.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-					myCalendar.get(Calendar.DAY_OF_MONTH));
+			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validFromDate, fromCalendar
+					.get(Calendar.YEAR), fromCalendar.get(Calendar.MONTH),
+					fromCalendar.get(Calendar.DAY_OF_MONTH));
+			if (!strValidUpto.isEmpty()) {
+				try {
+					datePickerDialog.getDatePicker().setMaxDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidUpto).getTime());
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
 			datePickerDialog.show();
 		});
 		
 		validUptoDate = (view, year, monthOfYear, dayOfMonth) -> {
-			myCalendar.set(Calendar.YEAR, year);
-			myCalendar.set(Calendar.MONTH, monthOfYear);
-			myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			uptoCalendar.set(Calendar.YEAR, year);
+			uptoCalendar.set(Calendar.MONTH, monthOfYear);
+			uptoCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 			String myFormat = "dd-MM-yyyy"; //In which you need put here
 			SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-			validTo.setText(sdf.format(myCalendar.getTime()));
+			validTo.setText(sdf.format(uptoCalendar.getTime()));
 			myFormat = "yyyy-MM-dd";
 			sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
-			strValidUpto = sdf.format(myCalendar.getTime());
+			strValidUpto = sdf.format(uptoCalendar.getTime());
 		};
 		
 		validTo.setOnClickListener(v -> {
-			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validUptoDate, myCalendar
-					.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-					myCalendar.get(Calendar.DAY_OF_MONTH));
+			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validUptoDate, uptoCalendar
+					.get(Calendar.YEAR), uptoCalendar.get(Calendar.MONTH),
+					uptoCalendar.get(Calendar.DAY_OF_MONTH));
 			try {
 				datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidFrom).getTime() + 1000);
 			} catch (ParseException e) {
@@ -240,16 +279,59 @@ public class AddNewCompliance extends AppCompatActivity {
 					otherIssueAuth.setError("Please Enter Issuing Authority");
 					otherIssueAuth.requestFocus();
 				} else {
-					UploadCompliance uploadCompliance = new UploadCompliance(this);
-					uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
-							complianceRefNo.getText().toString(), strIssueAuth,
-							complianceNotes.getText().toString(), strValidFrom, strValidUpto, strUserId, otherIssueAuth.getText().toString());
+					if (checkConnection()) {
+						UploadCompliance uploadCompliance = new UploadCompliance(this, progressBar, filepath, "online");
+						uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
+								complianceRefNo.getText().toString(), strIssueAuth,
+								complianceNotes.getText().toString(), strValidFrom, strValidUpto,
+								strUserId, otherIssueAuth.getText().toString(), strSessionId);
+					} else {
+						Toast.makeText(this, "Internet connection not available details will be saved when device is connected to internet", Toast.LENGTH_SHORT).show();
+						SharedPreferences sp = getSharedPreferences(COM_PREFS, Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = sp.edit();
+						editor.putBoolean(FLAG, true);
+						Gson gson = new GsonBuilder().create();
+						JsonArray array = gson.toJsonTree(filepath).getAsJsonArray();
+						editor.putString(COM_NAME, complianceName.getText().toString());
+						editor.putString(COM_CERT, array.toString());
+						editor.putString(COM_REF, complianceRefNo.getText().toString());
+						editor.putString(COM_AUTH, strIssueAuth);
+						editor.putString(COM_NOTES, complianceNotes.getText().toString());
+						editor.putString(COM_OTHER_AUTH, otherIssueAuth.getText().toString());
+						editor.putString(COM_VALID_FROM, strValidFrom);
+						editor.putString(COM_VALID_TO, strValidUpto);
+						editor.putString(COM_ADDED, new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+								.format(Calendar.getInstance().getTime()));
+						editor.apply();
+						startActivity(new Intent(this, CompliancesActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+					}
 				}
 			} else {
-				UploadCompliance uploadCompliance = new UploadCompliance(this);
-				uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
-						complianceRefNo.getText().toString(), strIssueAuth,
-						complianceNotes.getText().toString(), strValidFrom, strValidUpto, strUserId, "");
+				if (checkConnection()) {
+					UploadCompliance uploadCompliance = new UploadCompliance(this, progressBar, filepath, "online");
+					uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
+							complianceRefNo.getText().toString(), strIssueAuth,
+							complianceNotes.getText().toString(), strValidFrom, strValidUpto, strUserId, "", strSessionId);
+				} else {
+					Toast.makeText(this, "Internet connection not available details will be saved when device is connected to internet", Toast.LENGTH_SHORT).show();
+					SharedPreferences sp = getSharedPreferences(COM_PREFS, Context.MODE_PRIVATE);
+					SharedPreferences.Editor editor = sp.edit();
+					editor.putBoolean(FLAG, true);
+					Gson gson = new GsonBuilder().create();
+					JsonArray array = gson.toJsonTree(filepath).getAsJsonArray();
+					editor.putString(COM_NAME, complianceName.getText().toString());
+					editor.putString(COM_CERT, array.toString());
+					editor.putString(COM_REF, complianceRefNo.getText().toString());
+					editor.putString(COM_AUTH, strIssueAuth);
+					editor.putString(COM_NOTES, complianceNotes.getText().toString());
+					editor.putString(COM_OTHER_AUTH, "");
+					editor.putString(COM_VALID_FROM, strValidFrom);
+					editor.putString(COM_ADDED, new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+							.format(Calendar.getInstance().getTime()));
+					editor.putString(COM_VALID_TO, strValidUpto);
+					editor.apply();
+					finish();
+				}
 			}
 		});
 	}
@@ -311,8 +393,25 @@ public class AddNewCompliance extends AppCompatActivity {
 					if (filepath.size() <= 5) {
 						for (int i = 0; i < clipData.getItemCount(); i++) {
 							try {
-								if (FileUtil.from(this, clipData.getItemAt(i).getUri()).length() / 1024 <= 200) {
-									filepath.add(FileUtil.from(this, clipData.getItemAt(i).getUri()));
+								int length = 0;
+								for (int j = 0; j < clipData.getItemCount(); j++) {
+									length = length + (int) FileUtil.from(this, clipData.getItemAt(j).getUri()).length();
+								}
+								for (int j = 0; j < filepath.size(); j++) {
+									length = length + (int) filepath.get(j).length();
+								}
+								String fileExt = clipData.getItemAt(i).getUri().toString().substring(clipData.getItemAt(i).getUri().toString().lastIndexOf(".") + 1);
+								if (length <= 1024000) {
+									if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+										filepath.add(new Compressor(this)
+												.setMaxWidth(1280)
+												.setMaxHeight(720)
+												.setQuality(75)
+												.setCompressFormat(Bitmap.CompressFormat.JPEG)
+												.compressToFile(FileUtil.from(this, clipData.getItemAt(i).getUri())));
+									} else {
+										filepath.add(FileUtil.from(this, clipData.getItemAt(i).getUri()));
+									}
 								} else {
 									Toast.makeText(this, "File size cannot be greater than 200KB", Toast.LENGTH_SHORT).show();
 									break;
@@ -321,16 +420,31 @@ public class AddNewCompliance extends AppCompatActivity {
 								e.printStackTrace();
 							}
 						}
-						certCount.setText(String.valueOf(filepath.size()) + " Files Selected");
+						certCount.setText(filepath.size() + " Files Selected");
 					} else {
 						Toast.makeText(this, "You can only select upto 5 certificates", Toast.LENGTH_SHORT).show();
 					}
 				} else {
 					try {
 						if (filepath.size() <= 5) {
-							if (FileUtil.from(this, data.getData()).length() / 1024 <= 200) {
-								filepath.add(FileUtil.from(this, data.getData()));
-								certCount.setText(String.valueOf(filepath.size()) + " Files Selected");
+							int length = (int) FileUtil.from(this, data.getData()).length();
+							for (int j = 0; j < filepath.size(); j++) {
+								length = length + (int) filepath.get(j).length();
+							}
+							String fileExt = data.getData().toString().substring(data.getData().toString().lastIndexOf(".") + 1);
+							if (length <= 1024000) {
+								if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+									filepath.add(new Compressor(this)
+											.setMaxWidth(1280)
+											.setMaxHeight(720)
+											.setQuality(75)
+											.setCompressFormat(Bitmap.CompressFormat.JPEG)
+											.compressToFile(FileUtil.from(this, data.getData())));
+									certCount.setText(filepath.size() + " Files Selected");
+								} else {
+									filepath.add(FileUtil.from(this, data.getData()));
+									certCount.setText(filepath.size() + " Files Selected");
+								}
 							} else {
 								Toast.makeText(this, "File size cannot be greater than 200KB", Toast.LENGTH_SHORT).show();
 							}
@@ -353,15 +467,12 @@ public class AddNewCompliance extends AppCompatActivity {
 	
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-										   @NonNull String permissions[], @NonNull int[] grantResults) {
-		switch (requestCode) {
-			case 1: {
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-				}
-				
+										   @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == 1) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -380,128 +491,12 @@ public class AddNewCompliance extends AppCompatActivity {
 	}
 	
 	@SuppressLint("StaticFieldLeak")
-	class UploadCompliance extends AsyncTask<String, String, String> {
-		
-		@SuppressLint("StaticFieldLeak")
-		private Context context;
-		
-		UploadCompliance(Context context) {
-			this.context = context;
-		}
-		
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			progressBar.setVisibility(View.VISIBLE);
-			progressBar.bringToFront();
-		}
-		
-		
-		@Override
-		protected String doInBackground(String... params) {
-			
-			String orgId = params[0];
-			String name = params[1];
-			String refNo = params[2];
-			String issueAuth = params[3];
-			String notes = params[4];
-			String validFrom = params[5];
-			String validTo = params[6];
-			String userId = params[7];
-			String otherAuth = params[8];
-			
-			try {
-				ArrayList<String> fileNames = new ArrayList<>();
-				for (int i = 0; i < filepath.size(); i++) {
-					try {
-						HttpClient httpclient = new DefaultHttpClient();
-						HttpPost httppost = new HttpPost(URLs.ADD_COMPLIANCE);
-						MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-						entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-						FileBody image = new FileBody(filepath.get(i));
-						entityBuilder.addPart("image", image);
-						entityBuilder.addTextBody("org_details_id", orgId);
-						entityBuilder.addTextBody("app_session_id", getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE).getString(KEY_SESSION_ID, ""));
-						HttpEntity entity = entityBuilder.build();
-						httppost.setEntity(entity);
-						HttpResponse response = httpclient.execute(httppost);
-						HttpEntity httpEntity = response.getEntity();
-						String result = EntityUtils.toString(httpEntity);
-						if (result.contains("\"success\":false,\"msg\":\"Session Expire\"")) {
-							Toast.makeText(context, "Your Session is expired please login again", Toast.LENGTH_SHORT).show();
-							SharedPrefsManager.getInstance(context).logout();
-							Intent intent = new Intent(context, AppLogin.class);
-							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-							startActivity(intent);
-							finish();
-						} else {
-							JSONObject jsonObject = new JSONObject(result);
-							fileNames.add("\"" + jsonObject.getString("imageNm") + "\"");
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				try {
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost httppost = new HttpPost(URLs.ADD_COMPLIANCE);
-					MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-					entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-					entityBuilder.addTextBody("compliance_certificates", fileNames.toString());
-					entityBuilder.addTextBody("org_details_id", orgId);
-					entityBuilder.addTextBody("compliance_name", name);
-					entityBuilder.addTextBody("compliance_reference_no", refNo);
-					entityBuilder.addTextBody("compliance_notes", notes);
-					entityBuilder.addTextBody("users_details_id", userId);
-					entityBuilder.addTextBody("app_session_id", getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE).getString(KEY_SESSION_ID, ""));
-					if (issueAuth.equals("Other")) {
-						entityBuilder.addTextBody("compliance_issuing_auth", issueAuth);
-						entityBuilder.addTextBody("compliance_issuing_auth_other", otherAuth);
-					} else {
-						entityBuilder.addTextBody("compliance_issuing_auth", issueAuth);
-					}
-					entityBuilder.addTextBody("compliance_valid_from", validFrom);
-					entityBuilder.addTextBody("compliance_valid_upto", validTo);
-					HttpEntity entity = entityBuilder.build();
-					httppost.setEntity(entity);
-					HttpResponse response = httpclient.execute(httppost);
-					HttpEntity httpEntity = response.getEntity();
-					String res = EntityUtils.toString(httpEntity);
-					return res;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(String result) {
-			if (result != null) {
-				try {
-					JSONObject jsonObject = new JSONObject(result);
-					if (jsonObject.getBoolean("success")) {
-						Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT).show();
-						startActivity(new Intent(context, CompliancesActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-					} else if (result.contains("\"success\":false,\"msg\":\"Session Expire\"")) {
-						progressBar.setVisibility(View.GONE);
-						Toast.makeText(context, "Your Session is expired please login again", Toast.LENGTH_SHORT).show();
-						SharedPrefsManager.getInstance(context).logout();
-						Intent intent = new Intent(context, AppLogin.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(intent);
-						finish();
-					} else {
-						progressBar.setVisibility(View.GONE);
-						Toast.makeText(context, "Error Occured. Please try again", Toast.LENGTH_SHORT).show();
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-			super.onPostExecute(result);
-		}
+
+
+	private boolean checkConnection() {
+		ConnectivityManager connec;
+		connec = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		assert connec != null;
+		return connec.getActiveNetworkInfo() != null && connec.getActiveNetworkInfo().isAvailable() && connec.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 }

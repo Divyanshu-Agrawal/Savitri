@@ -34,6 +34,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
             android:paddingBottom="@dimen/_40sdp">
 
             <TextView

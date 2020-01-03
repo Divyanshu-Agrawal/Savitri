@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -47,7 +48,17 @@ public class AssignTaskPeopleAdapter extends ArrayAdapter<PeopleData> {
 		view = inflater.inflate(resource, null);
 		PeopleData data = object.get(position);
 		CheckBox checkBox = view.findViewById(R.id.assign_checkbox);
+		TextView invited = view.findViewById(R.id.invited);
 		checkBox.setText(data.getName());
+		if (data.getPassword() != null) {
+			if (data.getPassword().equals("null")) {
+				invited.setVisibility(View.VISIBLE);
+			} else {
+				invited.setVisibility(View.GONE);
+			}
+		} else {
+			invited.setVisibility(View.VISIBLE);
+		}
 		
 		checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
 			String value = object.get(position).getName();

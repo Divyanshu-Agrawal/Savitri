@@ -16,6 +16,7 @@ import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -26,6 +27,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -60,6 +62,7 @@ public class UpdateCompliance extends AppCompatActivity {
 	ArrayList<String> issueAuth = new ArrayList<>();
 	ArrayAdapter<String> issueAuthAdapter;
 	String strName, strNotes, strValidFrom, strValidTo, strRefno, strId;
+	View v;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,35 @@ public class UpdateCompliance extends AppCompatActivity {
 		issuingAuth = findViewById(R.id.update_compliance_issue_auth);
 		updateCompliance = findViewById(R.id.update_compliance_btn);
 		otherIssueAuth = findViewById(R.id.update_compliance_other_auth);
+
+		complianceName.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus)
+				hideKeyboard(v);
+		});
+		complianceRefNo.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus)
+				hideKeyboard(v);
+		});
+		complianceNotes.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus)
+				hideKeyboard(v);
+		});
+		validTo.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus)
+				hideKeyboard(v);
+		});
+		validFrom.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus)
+				hideKeyboard(v);
+		});
+		issuingAuth.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus)
+				hideKeyboard(v);
+		});
+		otherIssueAuth.setOnFocusChangeListener((v, hasFocus) -> {
+			if (!hasFocus)
+				hideKeyboard(v);
+		});
 		
 		strName = getIntent().getStringExtra("name");
 		strNotes = getIntent().getStringExtra("notes");
@@ -113,7 +145,18 @@ public class UpdateCompliance extends AppCompatActivity {
 		issuingAuth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				((TextView) parent.getChildAt(0)).setTextColor(getResources().getColor(R.color.hintcolor));
+				if (view != null) {
+					v = view;
+					if (position == 0)
+						((TextView) view).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				} else {
+					if (position == 0)
+						((TextView) v).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) v).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				}
 				if (position == 0) {
 					otherIssueAuth.setVisibility(View.GONE);
 					strIssueAuth = "";
@@ -158,6 +201,12 @@ public class UpdateCompliance extends AppCompatActivity {
 						complianceNotes.getText().toString(), strUserId, "");
 			}
 		});
+	}
+
+	private void hideKeyboard(View view) {
+		InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+		assert inputMethodManager != null;
+		inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
 	}
 	
 	private void fetchAuth() {

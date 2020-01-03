@@ -104,21 +104,25 @@ public class ComplianceAdapter extends ArrayAdapter<ComplianceData> {
 			}
 			
 			view.setOnClickListener(v -> {
-				Intent intent = new Intent(context, ComplianceDetails.class);
-				intent.putExtra("name", data.getName());
-				intent.putExtra("refNo", data.getRefNo());
-				if (data.getIssueAuth().equals("Other")) {
-					intent.putExtra("issueAuth", data.getOtherAuth());
+				if (data.getId() != null) {
+					Intent intent = new Intent(context, ComplianceDetails.class);
+					intent.putExtra("name", data.getName());
+					intent.putExtra("refNo", data.getRefNo());
+					if (data.getIssueAuth().equals("Other")) {
+						intent.putExtra("issueAuth", data.getOtherAuth());
+					} else {
+						intent.putExtra("issueAuth", data.getIssueAuth());
+					}
+					intent.putExtra("id", data.getId());
+					intent.putExtra("validFrom", data.getValidfrom());
+					intent.putExtra("validTo", data.getValidTo());
+					intent.putExtra("addedOn", data.getAddedDate());
+					intent.putExtra("certificate", data.getCertificate());
+					intent.putExtra("notes", data.getNotes());
+					context.startActivity(intent);
 				} else {
-					intent.putExtra("issueAuth", data.getIssueAuth());
+					Toast.makeText(context, "Compliance not uploaded yet please connect to internet", Toast.LENGTH_SHORT).show();
 				}
-				intent.putExtra("id", data.getId());
-				intent.putExtra("validFrom", data.getValidfrom());
-				intent.putExtra("validTo", data.getValidTo());
-				intent.putExtra("addedOn", data.getAddedDate());
-				intent.putExtra("certificate", data.getCertificate());
-				intent.putExtra("notes", data.getNotes());
-				context.startActivity(intent);
 			});
 			
 			holder.more.setOnClickListener(v -> {
@@ -128,26 +132,34 @@ public class ComplianceAdapter extends ArrayAdapter<ComplianceData> {
 				popup.setOnMenuItemClickListener(item -> {
 					switch (item.getItemId()) {
 						case R.id.edit_compliance:
-							Intent intent = new Intent(context, UpdateCompliance.class);
-							intent.putExtra("name", data.getName());
-							intent.putExtra("refNo", data.getRefNo());
-							if (data.getIssueAuth().equals("Other")) {
-								intent.putExtra("issueAuth", data.getOtherAuth());
+							if (data.getId() != null) {
+								Intent intent = new Intent(context, UpdateCompliance.class);
+								intent.putExtra("name", data.getName());
+								intent.putExtra("refNo", data.getRefNo());
+								if (data.getIssueAuth().equals("Other")) {
+									intent.putExtra("issueAuth", data.getOtherAuth());
+								} else {
+									intent.putExtra("issueAuth", data.getIssueAuth());
+								}
+								intent.putExtra("id", data.getId());
+								intent.putExtra("validFrom", data.getValidfrom());
+								intent.putExtra("validTo", data.getValidTo());
+								intent.putExtra("notes", data.getNotes());
+								context.startActivity(intent);
 							} else {
-								intent.putExtra("issueAuth", data.getIssueAuth());
+								Toast.makeText(context, "Compliance not uploaded yet please connect to internet", Toast.LENGTH_SHORT).show();
 							}
-							intent.putExtra("id", data.getId());
-							intent.putExtra("validFrom", data.getValidfrom());
-							intent.putExtra("validTo", data.getValidTo());
-							intent.putExtra("notes", data.getNotes());
-							context.startActivity(intent);
 							break;
 						case R.id.delete_compliance:
-							new AlertDialog.Builder(context)
-									.setMessage("Are you sure you want to delete this compliance?")
-									.setPositiveButton("Yes", (dialog, which) -> deleteCompliance(orgId, data.getId(), sessionId))
-							.setNegativeButton("No", null)
-							.show();
+							if (data.getId() != null) {
+								new AlertDialog.Builder(context)
+										.setMessage("Are you sure you want to delete this compliance?")
+										.setPositiveButton("Yes", (dialog, which) -> deleteCompliance(orgId, data.getId(), sessionId))
+										.setNegativeButton("No", null)
+										.show();
+							} else {
+								Toast.makeText(context, "Compliance not uploaded yet please connect to internet", Toast.LENGTH_SHORT).show();
+							}
 							break;
 					}
 					return true;

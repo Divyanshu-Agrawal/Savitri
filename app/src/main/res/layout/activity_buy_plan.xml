@@ -18,30 +18,200 @@
         app:titleTextColor="@color/button_text" />
 
     <LinearLayout
-        android:id="@+id/progress_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:id="@+id/layout"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_below="@id/toolbar">
 
-        <ProgressBar
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/_20sdp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:layout_width="0dp"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_20sdp"
-            android:layout_weight="2"
-            android:gravity="start"
-            android:padding="10dp"
-            android:singleLine="true"
-            android:text="Please Wait"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="30sp" />
+            app:cardPreventCornerOverlap="true"
+            android:id="@+id/cardview"
+            android:layout_margin="@dimen/_10sdp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:text="Plan Name"
+                    android:id="@+id/plan_name"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/cardBackground">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/plan_cost"
+                        android:paddingTop="5dp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        android:gravity="center"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="5dp"
+                        android:text="Charged Annually"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_20sdp"
+        android:layout_below="@id/layout"
+        android:paddingBottom="@dimen/_20sdp">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:cardCornerRadius="10dp"
+            android:id="@+id/offline_btn"
+            app:cardPreventCornerOverlap="true"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.9"
+                    android:layout_height="match_parent"
+                    android:text="Pay Offline"
+                    android:textSize="20sp"
+                    android:padding="10dp"
+                    android:gravity="center_vertical"/>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.1"
+                    android:src="@drawable/next_icon"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:id="@+id/online_btn"
+            android:layout_marginBottom="@dimen/_10sdp"
+            app:cardCornerRadius="10dp"
+            android:layout_below="@id/offline_btn"
+            app:cardPreventCornerOverlap="true"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.9"
+                    android:layout_height="match_parent"
+                    android:text="Pay Online"
+                    android:textSize="20sp"
+                    android:padding="10dp"
+                    android:gravity="center_vertical"/>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.1"
+                    android:src="@drawable/next_icon"/>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_layout"
+        android:visibility="gone"
+        android:background="#80111111">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardPreventCornerOverlap="true"
+            android:layout_marginStart="@dimen/_30sdp"
+            app:cardElevation="5dp"
+            app:cardBackgroundColor="@android:color/white"
+            app:contentPaddingTop="10dp"
+            app:contentPaddingBottom="10dp"
+            android:layout_centerInParent="true"
+            app:cardCornerRadius="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible"
+                android:orientation="horizontal">
+
+                <ProgressBar
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_weight="2"
+                    android:gravity="start"
+                    android:padding="10dp"
+                    android:singleLine="true"
+                    android:text="Please Wait"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="30sp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -19,6 +19,7 @@ import cz.msebera.android.httpclient.entity.mime.MultipartEntityBuilder;
 import cz.msebera.android.httpclient.entity.mime.content.FileBody;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.util.EntityUtils;
+import id.zelory.compressor.Compressor;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -29,6 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -70,7 +72,8 @@ public class RenewCompliance extends AppCompatActivity {
 	Button uploadCertificate;
 	TextView certCount;
 	ArrayList<File> filepath = new ArrayList<>();
-	Calendar myCalendar = Calendar.getInstance();
+	Calendar fromCalendar = Calendar.getInstance();
+	Calendar uptoCalender = Calendar.getInstance();
 	DatePickerDialog.OnDateSetListener validFromDate, validUptoDate;
 	TextView name, notes, issueAuth, refNo;
 	String strName, strNotes, strIssueAuth, strValidFrom, strValidTo, strRefno, strId;
@@ -129,23 +132,28 @@ public class RenewCompliance extends AppCompatActivity {
 		});
 		
 		validFromDate = (view, year, monthOfYear, dayOfMonth) -> {
-			myCalendar.set(Calendar.YEAR, year);
-			myCalendar.set(Calendar.MONTH, monthOfYear);
-			myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			fromCalendar.set(Calendar.YEAR, year);
+			fromCalendar.set(Calendar.MONTH, monthOfYear);
+			fromCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 			String myFormat = "dd-MM-yyyy"; //In which you need put here
 			SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-			validFrom.setText(sdf.format(myCalendar.getTime()));
+			validFrom.setText(sdf.format(fromCalendar.getTime()));
 			myFormat = "yyyy-MM-dd";
 			sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
-			setValidFrom = sdf.format(myCalendar.getTime());
+			setValidFrom = sdf.format(fromCalendar.getTime());
 		};
 		
 		validFrom.setOnClickListener(v -> {
-			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validFromDate, myCalendar
-					.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-					myCalendar.get(Calendar.DAY_OF_MONTH));
+			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validFromDate, fromCalendar
+					.get(Calendar.YEAR), fromCalendar.get(Calendar.MONTH),
+					fromCalendar.get(Calendar.DAY_OF_MONTH));
 			try {
-				datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidTo).getTime() + 1000);
+				if (setValidUpto.isEmpty())
+					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidTo).getTime() + 1000);
+				else {
+					datePickerDialog.getDatePicker().setMaxDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(setValidUpto).getTime());
+					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidTo).getTime() + 1000);
+				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -153,23 +161,26 @@ public class RenewCompliance extends AppCompatActivity {
 		});
 		
 		validUptoDate = (view, year, monthOfYear, dayOfMonth) -> {
-			myCalendar.set(Calendar.YEAR, year);
-			myCalendar.set(Calendar.MONTH, monthOfYear);
-			myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			uptoCalender.set(Calendar.YEAR, year);
+			uptoCalender.set(Calendar.MONTH, monthOfYear);
+			uptoCalender.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 			String myFormat = "dd-MM-yyyy"; //In which you need put here
 			SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-			validTo.setText(sdf.format(myCalendar.getTime()));
+			validTo.setText(sdf.format(uptoCalender.getTime()));
 			myFormat = "yyyy-MM-dd";
 			sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
-			setValidUpto = sdf.format(myCalendar.getTime());
+			setValidUpto = sdf.format(uptoCalender.getTime());
 		};
 		
 		validTo.setOnClickListener(v -> {
-			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validUptoDate, myCalendar
-					.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-					myCalendar.get(Calendar.DAY_OF_MONTH));
+			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validUptoDate, uptoCalender
+					.get(Calendar.YEAR), uptoCalender.get(Calendar.MONTH),
+					uptoCalender.get(Calendar.DAY_OF_MONTH));
 			try {
-				datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(setValidFrom).getTime() + 1000);
+				if (!setValidFrom.isEmpty())
+					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(setValidFrom).getTime() + 1000);
+				else
+					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidTo).getTime() + 1000);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -203,8 +214,25 @@ public class RenewCompliance extends AppCompatActivity {
 					if (filepath.size() <= 5) {
 						for (int i = 0; i < clipData.getItemCount(); i++) {
 							try {
-								if (FileUtil.from(this, clipData.getItemAt(i).getUri()).length()/1024 <= 200) {
-									filepath.add(FileUtil.from(this, clipData.getItemAt(i).getUri()));
+								int length = 0;
+								for (int j = 0; j < clipData.getItemCount(); j++) {
+									length = length + (int) FileUtil.from(this, clipData.getItemAt(j).getUri()).length();
+								}
+								for (int j = 0; j < filepath.size(); j++) {
+									length = length + (int) filepath.get(j).length();
+								}
+								String fileExt = clipData.getItemAt(i).getUri().toString().substring(clipData.getItemAt(i).getUri().toString().lastIndexOf(".") + 1);
+								if (length <= 1024000) {
+									if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+										filepath.add(new Compressor(this)
+												.setMaxWidth(1280)
+												.setMaxHeight(720)
+												.setQuality(75)
+												.setCompressFormat(Bitmap.CompressFormat.JPEG)
+												.compressToFile(FileUtil.from(this, clipData.getItemAt(i).getUri())));
+									} else {
+										filepath.add(FileUtil.from(this, clipData.getItemAt(i).getUri()));
+									}
 								} else {
 									Toast.makeText(this, "File size cannot be greater than 200KB", Toast.LENGTH_SHORT).show();
 									break;
@@ -213,16 +241,31 @@ public class RenewCompliance extends AppCompatActivity {
 								e.printStackTrace();
 							}
 						}
-						certCount.setText(String.valueOf(filepath.size()) + " Files Selected");
+						certCount.setText(filepath.size() + " Files Selected");
 					} else {
 						Toast.makeText(this, "You can only select upto 5 certificates", Toast.LENGTH_SHORT).show();
 					}
 				} else {
 					try {
 						if (filepath.size() <= 5) {
-							if (FileUtil.from(this, data.getData()).length() / 1024 <= 200) {
-								filepath.add(FileUtil.from(this, data.getData()));
-								certCount.setText(String.valueOf(filepath.size()) + " Files Selected");
+							int length = (int) FileUtil.from(this, data.getData()).length();
+							for (int j = 0; j < filepath.size(); j++) {
+								length = length + (int) filepath.get(j).length();
+							}
+							String fileExt = data.getData().toString().substring(data.getData().toString().lastIndexOf(".") + 1);
+							if (length <= 1024000) {
+								if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+									filepath.add(new Compressor(this)
+											.setMaxWidth(1280)
+											.setMaxHeight(720)
+											.setQuality(75)
+											.setCompressFormat(Bitmap.CompressFormat.JPEG)
+											.compressToFile(FileUtil.from(this, data.getData())));
+									certCount.setText(filepath.size() + " Files Selected");
+								} else {
+									filepath.add(FileUtil.from(this, data.getData()));
+									certCount.setText(filepath.size() + " Files Selected");
+								}
 							} else {
 								Toast.makeText(this, "File size cannot be greater than 200KB", Toast.LENGTH_SHORT).show();
 							}

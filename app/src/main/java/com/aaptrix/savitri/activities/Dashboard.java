@@ -4,29 +4,42 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.aaptrix.savitri.databeans.PlansData;
+import com.aaptrix.savitri.asyncclass.UploadCompliance;
+import com.aaptrix.savitri.asyncclass.UploadPayment;
+import com.aaptrix.savitri.asyncclass.UploadTask;
+import com.aaptrix.savitri.databeans.PeopleData;
 import com.aaptrix.savitri.session.URLs;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.session.SharedPrefsManager;
@@ -41,6 +54,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ShareCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.gridlayout.widget.GridLayout;
@@ -54,14 +68,39 @@ import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.util.EntityUtils;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_AUTH;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_CERT;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_NAME;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_NOTES;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_OTHER_AUTH;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_PREFS;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_REF;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_VALID_FROM;
+import static com.aaptrix.savitri.session.SharedPrefsNames.COM_VALID_TO;
+import static com.aaptrix.savitri.session.SharedPrefsNames.FLAG;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_EMAIL;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_GRACE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_MOBILE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_PLAN_TYPE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PLAN_EXP;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PLAN_EXPIRE_DATE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PLAN_NAME;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PLAN_PURCHASE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SERVER_STATUS;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_STORAGE_CYCLE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_IMAGE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_NAME;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.PAYMENT_PREFS;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_ASSIGN;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DATE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DETAIL;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_NAME;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_PEOPLE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_PREFS;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 import static com.aaptrix.savitri.session.URLs.DATA_URL;
 
@@ -69,16 +108,16 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 	
 	DrawerLayout drawer;
 	ImageButton complianceBtn, renewalBtn, peopleBtn, tasksBtn, historyBtn, feedbackBtn;
-	MaterialButton upgradePlanBtn;
-	LinearLayout logoutBtn, appInfoBtn;
+	MaterialButton upgradePlanBtn, upPlanBtn;
 	CircleImageView profImage;
 	CardView feedbackView, peopleView;
 	GridLayout gridLayout;
 	String planExpireDate;
 	TextView planName;
-	ArrayList<PlansData> plansArray = new ArrayList<>();
-	String planId;
-	
+	String planId, strOrgId, strUserId, strSessionId;
+	SharedPreferences sp;
+	Intent intent;
+
 	@SuppressLint("SetTextI18n")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,8 +137,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		Menu menu = navigationView.getMenu();
 		MenuItem people = menu.findItem(R.id.people);
 		MenuItem feedback = menu.findItem(R.id.feedback);
-		
-		
+
+		intent = new Intent(this, PlansActivity.class);
 		View headerView = navigationView.getHeaderView(0);
 		
 		complianceBtn = findViewById(R.id.compliances_btn);
@@ -109,8 +148,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		historyBtn = findViewById(R.id.history_btn);
 		feedbackBtn = findViewById(R.id.feedback_btn);
 		upgradePlanBtn = findViewById(R.id.upgrade_plan_btn);
-		logoutBtn = navigationView.findViewById(R.id.logout_btn);
-		appInfoBtn = navigationView.findViewById(R.id.app_info_btn);
 		feedbackView = findViewById(R.id.feedback_view);
 		peopleView = findViewById(R.id.people_view);
 		gridLayout = findViewById(R.id.grid_layout);
@@ -119,79 +156,173 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		TextView userName = headerView.findViewById(R.id.logged_user_name);
 		TextView userRole = headerView.findViewById(R.id.logged_user_role);
 		planName = headerView.findViewById(R.id.plan_name);
-		fetchPlans();
 		
-		SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+		sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		planId = sp.getString(KEY_ORG_PLAN_TYPE, "");
+		strOrgId = sp.getString(KEY_ORG_ID, "");
+		strSessionId = sp.getString(KEY_SESSION_ID, "");
+		strUserId = sp.getString(KEY_USER_ID, "");
+		String strPlanName = sp.getString(KEY_PLAN_NAME, "");
+		fetchPeople(strOrgId, strSessionId, strUserId);
 		String url = DATA_URL + sp.getString(KEY_ORG_ID, "") + "/profile/" + sp.getString(KEY_USER_IMAGE, "");
 		Picasso.with(this).load(url).placeholder(R.drawable.user_placeholder).into(profImage);
 		userName.setText(sp.getString(KEY_USER_NAME, ""));
 		userRole.setText(sp.getString(KEY_USER_ROLE, ""));
+
+		if (strPlanName != null && !strPlanName.isEmpty()) {
+			planName.setText(strPlanName);
+		} else {
+			fetchPlans();
+		}
+
+		RelativeLayout profLayout = headerView.findViewById(R.id.profile_layout);
+		profLayout.setOnClickListener(v -> startActivity(new Intent(this, UserProfile.class)
+				.putExtra("userId", sp.getString(KEY_USER_ID, ""))));
+
+		upPlanBtn = headerView.findViewById(R.id.upgrade_plan_btn);
 		
-		if (!sp.getString(KEY_USER_ROLE, "").equals("Admin")) {
+		if (Objects.equals(sp.getString(KEY_ORG_PLAN_TYPE, ""), "3")) {
+			upgradePlanBtn.setText("Buy Plan Now");
+			upPlanBtn.setText("Buy Plan Now");
+		}
+
+		if (!Objects.equals(sp.getString(KEY_USER_ROLE, ""), "Admin")) {
 			gridLayout.removeView(peopleView);
 			gridLayout.removeView(feedbackView);
 			people.setVisible(false);
 			feedback.setVisible(false);
 			upgradePlanBtn.setVisibility(View.GONE);
+			upPlanBtn.setVisibility(View.GONE);
 		}
-		
-		headerView.setOnClickListener(v -> startActivity(new Intent(this, UserProfile.class)
-				.putExtra("userId", sp.getString(KEY_USER_ID, ""))));
-		
-		logoutBtn.setOnClickListener(v -> new AlertDialog.Builder(this)
-				.setMessage("Are you sure you want to logout?")
-				.setPositiveButton("Yes", (dialog, which) -> {
-					SharedPrefsManager.getInstance(this).logout();
-					Intent intent = new Intent(this, AppLogin.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					startActivity(intent);
-					finish();
-				})
-				.setNegativeButton("No", null)
-				.show());
-		
-		if (sp.getString(KEY_ORG_PLAN_TYPE, "").equals("3")) {
-			upgradePlanBtn.setText("Buy Plan Now");
-		}
-		
-		try {
-			planExpireDate = sp.getString(KEY_PLAN_EXPIRE_DATE, "");
-			Calendar calendar = Calendar.getInstance();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-			for (int i = 15; i > 0; i--) {
-				calendar.setTime(sdf.parse(planExpireDate));
-				int days = i;
-				calendar.add(Calendar.DATE, -days);
-				Date remainingDays = new Date(calendar.getTimeInMillis());
-				Date todayDate = new Date(Calendar.getInstance().getTimeInMillis());
-				if (remainingDays.compareTo(todayDate) == 0) {
-					upgradePlanBtn.setText(days + " days left Renew Plan Now");
-				}
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-		appInfoBtn.setOnClickListener(v -> startActivity(new Intent(this, AppInfo.class)));
+
+		upPlanBtn.setOnClickListener(v -> {
+			startActivity(new Intent(this, PlansActivity.class));
+			drawer.closeDrawers();
+		});
+
+		checkValidity();
+
 		upgradePlanBtn.setOnClickListener(v -> startActivity(new Intent(this, PlansActivity.class)));
 		complianceBtn.setOnClickListener(v -> startActivity(new Intent(this, CompliancesActivity.class)));
-		peopleBtn.setOnClickListener(v -> startActivity(new Intent(this, PeopleActivity.class)));
+		peopleBtn.setOnClickListener(v -> {
+			if (planId.equals("3")) {
+				new AlertDialog.Builder(this)
+						.setMessage("Please upgrade your plan to access more.")
+						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(intent))
+						.setNegativeButton("Cancel", null)
+						.show();
+			} else {
+				startActivity(new Intent(this, PeopleActivity.class));
+			}
+		});
+
 		feedbackBtn.setOnClickListener(v -> startActivity(new Intent(this, FeedbackActivity.class)));
 		renewalBtn.setOnClickListener(v -> startActivity(new Intent(this, RenewalActivity.class)));
-		tasksBtn.setOnClickListener(v -> startActivity(new Intent(this, TasksActivity.class)));
+		tasksBtn.setOnClickListener(v -> {
+			if (planId.equals("3")) {
+				new AlertDialog.Builder(this)
+						.setMessage("Please upgrade your plan to access more.")
+						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(intent))
+						.setNegativeButton("Cancel", null)
+						.show();
+			} else {
+				startActivity(new Intent(this, TasksActivity.class));
+			}
+		});
+
 		historyBtn.setOnClickListener(v -> {
 			if (sp.getInt(KEY_STORAGE_CYCLE, 0) == 0) {
 				new AlertDialog.Builder(this)
-						.setMessage("Please upgrade your plan to access more..")
-						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(new Intent(this, PlansActivity.class)))
+						.setMessage("Please upgrade your plan to access more.")
+						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(intent))
 						.setNegativeButton("Cancel", null)
 						.show();
 			} else {
 				startActivity(new Intent(this, HistoryActivity.class));
 			}
 		});
+
+		SharedPreferences comPrefs = getSharedPreferences(COM_PREFS, Context.MODE_PRIVATE);
+		if (checkConnection()) {
+			if (comPrefs.getBoolean(FLAG, false)) {
+				GsonBuilder gsonBuilder = new GsonBuilder();
+				Type type = new TypeToken<ArrayList<File>>() {}.getType();
+				ArrayList<File> filepath = gsonBuilder.create().fromJson(comPrefs.getString(COM_CERT, ""), type);
+				UploadCompliance uploadCompliance = new UploadCompliance(this, null, filepath, "offline");
+				uploadCompliance.execute(strOrgId, comPrefs.getString(COM_NAME, ""),
+						comPrefs.getString(COM_REF, ""), comPrefs.getString(COM_AUTH, "Other"),
+						comPrefs.getString(COM_NOTES, ""), comPrefs.getString(COM_VALID_FROM, ""),
+						comPrefs.getString(COM_VALID_TO, ""),
+						strUserId, comPrefs.getString(COM_OTHER_AUTH, ""), strSessionId);
+			}
+		}
+
+		SharedPreferences taskPrefs = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
+		if (checkConnection()) {
+			if (taskPrefs.getBoolean(FLAG, false)) {
+				UploadTask uploadTask = new UploadTask(this, null, "offline");
+				uploadTask.execute(strOrgId, strUserId, strSessionId,
+						taskPrefs.getString(TASK_NAME, ""), taskPrefs.getString(TASK_DETAIL, ""),
+						taskPrefs.getString(TASK_DATE, ""), taskPrefs.getString(TASK_ASSIGN, ""));
+			}
+		}
 	}
+
+	@SuppressLint("SetTextI18n")
+	private void checkValidity() {
+		try {
+			planExpireDate = sp.getString(KEY_PLAN_EXPIRE_DATE, "");
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            calendar.setTime(sdf.parse(planExpireDate));
+            calendar.add(Calendar.DATE, 1);
+            Date remainingDays = new Date(calendar.getTimeInMillis());
+            Date todayDate = new Date(Calendar.getInstance().getTimeInMillis());
+            int difference= ((int)((remainingDays.getTime()/(24*60*60*1000))
+                            -(int)(todayDate.getTime()/(24*60*60*1000))));
+            if (difference > 0 && difference < 16) {
+				upgradePlanBtn.setText(difference + " days left Renew Plan Now");
+				upPlanBtn.setText(difference + " days left");
+			} else if (difference == 0) {
+				upgradePlanBtn.setText("Plan Expires Today Renew Now");
+				upPlanBtn.setText("Renew Now");
+			} else if (difference < 0){
+				Calendar c = Calendar.getInstance();
+				c.setTime(sdf.parse(planExpireDate));
+				c.add(Calendar.DATE, sp.getInt(KEY_GRACE, 0)+1);
+				Date graceExp = new Date(c.getTimeInMillis());
+				Date planExp = sdf.parse(planExpireDate);
+				int diff = ((int)((graceExp.getTime()/(24*60*60*1000))
+						-(int)(planExp.getTime()/(24*60*60*1000))));
+				if (diff > 0) {
+					sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+					String msg = "Your plan has expired on " + sdf.parse(planExpireDate) + ". You have grace period of "
+							+ diff + " days, after that you will lose all of your data.";
+					new AlertDialog.Builder(this).setMessage(msg)
+							.setPositiveButton("Buy Plan", (dialog, which) -> startActivity(new Intent(this, PlansActivity.class)))
+							.setNegativeButton("Exit", (dialog, which) -> System.exit(0))
+							.setCancelable(false)
+							.show();
+				} else {
+					sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+					String msg = "Your plan has expired on " + sdf.parse(planExpireDate) + ". You have exhausted your grace period on "
+							+ sdf.format(c.getTimeInMillis()) + ". Please contact us for more information";
+					new AlertDialog.Builder(this).setMessage(msg)
+							.setPositiveButton("Contact Us", (dialog, which) -> startActivity(new Intent(this, FeedbackActivity.class)))
+							.setNegativeButton("Exit", (dialog, which) -> System.exit(0))
+							.setCancelable(false)
+							.show();
+				}
+			} else if (difference > 16) {
+            	upPlanBtn.setText("View Plans");
+            	upgradePlanBtn.setText("View Plans");
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	
 	private void fetchPlans() {
 		new Thread(() -> {
@@ -215,20 +346,59 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 							JSONArray jsonArray = jsonObject.getJSONArray("allPlans");
 							for (int i = 0; i < jsonArray.length(); i++) {
 								JSONObject jObject = jsonArray.getJSONObject(i);
-								PlansData data = new PlansData();
-								data.setId(jObject.getString("plan_id"));
-								data.setName(jObject.getString("plan_name"));
-								plansArray.add(data);
+								if (jObject.getString("plan_id").equals(planId)) {
+									planName.setText(jObject.getString("plan_name"));
+									sp.edit().putString(KEY_PLAN_NAME, jObject.getString("plan_name")).apply();
+									break;
+								}
 							}
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-					for (int i = 0; i < plansArray.size(); i++) {
-						if (plansArray.get(i).getId().equals(planId)) {
-							planName.setText(plansArray.get(i).getName());
-							break;
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}).start();
+	}
+
+	private void fetchPeople(String strOrgId, String  strSessionId, String strUserId) {
+		new Thread(() -> {
+			try {
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpPost httppost = new HttpPost(URLs.ALL_PEOPLE);
+				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+				entityBuilder.addTextBody("org_details_id", strOrgId);
+				entityBuilder.addTextBody("app_session_id", strSessionId);
+				entityBuilder.addTextBody("users_details_id", strUserId);
+				HttpEntity entity = entityBuilder.build();
+				httppost.setEntity(entity);
+				HttpResponse response = httpclient.execute(httppost);
+				HttpEntity httpEntity = response.getEntity();
+				String result = EntityUtils.toString(httpEntity);
+				Handler handler = new Handler(Looper.getMainLooper());
+				handler.post(() -> {
+					try {
+						if (!result.contains("\"success\":false,\"msg\":\"Session Expire\"") || !result.contains("{\"allMembers\":null}")) {
+							ArrayList<PeopleData> peopleArray = new ArrayList<>();
+							JSONObject jsonObject = new JSONObject(result);
+							JSONArray jsonArray = jsonObject.getJSONArray("allMembers");
+							for (int i = 0; i < jsonArray.length(); i++) {
+								JSONObject jObject = jsonArray.getJSONObject(i);
+								PeopleData data = new PeopleData();
+								data.setUsers_details_id(jObject.getString("users_details_id"));
+								data.setName(jObject.getString("users_name"));
+								peopleArray.add(data);
+							}
+							Gson gson = new GsonBuilder().create();
+							JsonArray array = gson.toJsonTree(peopleArray).getAsJsonArray();
+							SharedPreferences sp = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
+							sp.edit().putString(TASK_PEOPLE, array.toString()).apply();
 						}
+					} catch (JSONException e) {
+						e.printStackTrace();
 					}
 				});
 			} catch (IOException e) {
@@ -240,9 +410,45 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 	@Override
 	public void onResume() {
 		super.onResume();
+		checkValidity();
 		SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		String url = DATA_URL + sp.getString(KEY_ORG_ID, "") + "/profile/" + sp.getString(KEY_USER_IMAGE, "");
 		Picasso.with(this).load(url).placeholder(R.drawable.user_placeholder).into(profImage);
+
+		SharedPreferences comPrefs = getSharedPreferences(COM_PREFS, Context.MODE_PRIVATE);
+		if (checkConnection()) {
+			if (comPrefs.getBoolean(FLAG, false)) {
+				GsonBuilder gsonBuilder = new GsonBuilder();
+				Type type = new TypeToken<ArrayList<File>>() {}.getType();
+				ArrayList<File> filepath = gsonBuilder.create().fromJson(comPrefs.getString(COM_CERT, ""), type);
+				UploadCompliance uploadCompliance = new UploadCompliance(this, null, filepath, "offline");
+				uploadCompliance.execute(strOrgId, comPrefs.getString(COM_NAME, ""),
+						comPrefs.getString(COM_REF, ""), comPrefs.getString(COM_AUTH, "Other"),
+						comPrefs.getString(COM_NOTES, ""), comPrefs.getString(COM_VALID_FROM, ""),
+						comPrefs.getString(COM_VALID_TO, ""),
+						strUserId, comPrefs.getString(COM_OTHER_AUTH, ""), strSessionId);
+			}
+		}
+
+		SharedPreferences taskPrefs = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
+		if (checkConnection()) {
+			if (taskPrefs.getBoolean(FLAG, false)) {
+				UploadTask uploadTask = new UploadTask(this, null, "offline");
+				uploadTask.execute(strOrgId, strUserId, strSessionId,
+						taskPrefs.getString(TASK_NAME, ""), taskPrefs.getString(TASK_DETAIL, ""),
+						taskPrefs.getString(TASK_DATE, ""), taskPrefs.getString(TASK_ASSIGN, ""));
+			}
+		}
+
+		SharedPreferences payPrefs = getSharedPreferences(PAYMENT_PREFS, Context.MODE_PRIVATE);
+		if (checkConnection()) {
+			if (payPrefs.getBoolean(KEY_SERVER_STATUS, false)) {
+				UploadPayment payment = new UploadPayment(this, null);
+				payment.execute(payPrefs.getString(KEY_ORG_ID, ""), payPrefs.getString(KEY_USER_ID, ""),
+						payPrefs.getString(KEY_MOBILE, ""), payPrefs.getString(KEY_EMAIL, ""), payPrefs.getString(KEY_PLAN_PURCHASE, ""),
+						payPrefs.getString(KEY_PLAN_EXP, ""), payPrefs.getString(KEY_PLAN_NAME, ""));
+			}
+		}
 	}
 	
 	@Override
@@ -265,7 +471,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		}
 	}
 	
-	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		int id = item.getItemId();
@@ -276,15 +481,73 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		} else if (id == R.id.renewal) {
 			startActivity(new Intent(this, RenewalActivity.class));
 		} else if (id == R.id.people) {
-			startActivity(new Intent(this, PeopleActivity.class));
+			if (planId.equals("3")) {
+				new AlertDialog.Builder(this)
+						.setMessage("Please upgrade your plan to access more.")
+						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(intent))
+						.setNegativeButton("Cancel", null)
+						.show();
+			} else {
+				startActivity(new Intent(this, PeopleActivity.class));
+			}
 		} else if (id == R.id.tasks) {
-			startActivity(new Intent(this, TasksActivity.class));
+			if (planId.equals("3")) {
+				new AlertDialog.Builder(this)
+						.setMessage("Please upgrade your plan to access more.")
+						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(intent))
+						.setNegativeButton("Cancel", null)
+						.show();
+			} else {
+				startActivity(new Intent(this, TasksActivity.class));
+			}
 		} else if (id == R.id.history) {
-			startActivity(new Intent(this, HistoryActivity.class));
+			if (getSharedPreferences(USER_PREFS, 0).getInt(KEY_STORAGE_CYCLE, 0) == 0) {
+				new AlertDialog.Builder(this)
+						.setMessage("Please upgrade your plan to access more.")
+						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(intent))
+						.setNegativeButton("Cancel", null)
+						.show();
+			} else {
+				startActivity(new Intent(this, HistoryActivity.class));
+			}
 		} else if (id == R.id.feedback) {
 			startActivity(new Intent(this, FeedbackActivity.class));
+		} else if (id == R.id.rate_us) {
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			i.setData(Uri.parse("market://details?id=com.aaptrix.savitri"));
+			startActivity(i);
+		} else if (id == R.id.share_us) {
+			String msg = "Install Savitri: Your compliance tracking assistant, and never miss any compliance renewals." + " " + "\nhttp://play.google.com/store/apps/details?id=com.aaptrix.savitri";
+			ShareCompat.IntentBuilder.from(this)
+					.setType("text/plain")
+					.setChooserTitle("Share via...")
+					.setText(msg)
+					.startChooser();
+		} else if (id == R.id.app_info) {
+			startActivity(new Intent(this, AppInfo.class));
+		} else if (id == R.id.logout) {
+			new AlertDialog.Builder(this)
+					.setMessage("Are you sure you want to logout?")
+					.setPositiveButton("Yes", (dialog, which) -> {
+						SharedPrefsManager.getInstance(this).logout();
+						Intent intent = new Intent(this, AppLogin.class);
+						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						startActivity(intent);
+						finish();
+					})
+					.setNegativeButton("No", null)
+					.show();
+		} else if (id == R.id.pay_history) {
+			startActivity(new Intent(this, PaymentHistory.class));
 		}
 		drawer.closeDrawer(GravityCompat.START);
 		return false;
+	}
+
+	private boolean checkConnection() {
+		ConnectivityManager connec;
+		connec = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		assert connec != null;
+		return connec.getActiveNetworkInfo() != null && connec.getActiveNetworkInfo().isAvailable() && connec.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 }

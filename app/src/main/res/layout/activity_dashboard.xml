@@ -19,71 +19,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:theme="@style/NavDrawerStyle"
         app:itemTextColor="@color/colorPrimaryDark"
         android:background="@color/cardBackground"
         app:itemIconTint="@color/colorPrimaryDark"
         app:headerLayout="@layout/nav_header_dashboard"
-        app:menu="@menu/activity_dashboard_drawer">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="bottom">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:orientation="horizontal"
-                android:layout_gravity="bottom"
-                android:id="@+id/app_info_btn">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_weight="0.5"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/app_info_icon"
-                    android:padding="10dp"
-                    android:layout_marginStart="@dimen/_5sdp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
-                    android:layout_height="match_parent"
-                    android:text="App Info"
-                    android:textSize="20sp"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/colorPrimaryDark"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:orientation="horizontal"
-                android:id="@+id/logout_btn">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_weight="0.5"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/logout_icon"
-                    android:padding="10dp"
-                    android:layout_marginStart="@dimen/_5sdp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
-                    android:layout_height="match_parent"
-                    android:text="Logout"
-                    android:textSize="20sp"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/colorPrimaryDark"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </com.google.android.material.navigation.NavigationView>
+        app:menu="@menu/activity_dashboard_drawer"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

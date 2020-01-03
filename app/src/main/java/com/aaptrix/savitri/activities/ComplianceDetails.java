@@ -23,10 +23,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
@@ -47,6 +51,7 @@ public class ComplianceDetails extends AppCompatActivity {
 	String strName, strNotes, strIssueAuth, strAddedOn, strValidFrom, strValidTo, strRefno, strCertificate, strId;
 	SharedPreferences sp;
 	String orgId, sessionId;
+	CertificateAdapter adaptor;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +72,7 @@ public class ComplianceDetails extends AppCompatActivity {
 		sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		orgId = sp.getString(KEY_ORG_ID, "");
 		sessionId = sp.getString(KEY_SESSION_ID, "");
+		Log.e("sessionid", sessionId);
 		
 		strName = getIntent().getStringExtra("name");
 		strNotes = getIntent().getStringExtra("notes");
@@ -96,8 +102,12 @@ public class ComplianceDetails extends AppCompatActivity {
 		date = new FormatDate(strValidTo, "yyyy-MM-dd", "dd-MM-yyyy");
 		validTo.setText(date.format());
 		refNo.setText(strRefno);
-		
-		CertificateAdapter adaptor = new CertificateAdapter(this, R.layout.list_certificate, certUrl, this);
+
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		layoutParams.height = (int) (getResources().getDimension(R.dimen._220sdp)) * certUrl.size();
+		certificateList.setLayoutParams(layoutParams);
+		certificateList.setPadding(0,0,0,50);
+		adaptor = new CertificateAdapter(this, R.layout.list_certificate, certUrl, this);
 		certificateList.setAdapter(adaptor);
 		adaptor.notifyDataSetChanged();
 
@@ -190,5 +200,11 @@ public class ComplianceDetails extends AppCompatActivity {
 	public void onBackPressed() {
 		super.onBackPressed();
 		finish();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		adaptor.deleteFile();
 	}
 }

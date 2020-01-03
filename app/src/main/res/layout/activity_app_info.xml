@@ -25,42 +25,114 @@
         android:layout_below="@id/app_info_toolbar"
         android:visibility="gone"/>
 
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/relative_layout"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
         android:layout_below="@id/app_info_toolbar">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:id="@+id/relative_layout"
+        android:paddingBottom="@dimen/_20sdp">
 
         <ImageView
             android:id="@+id/app_logo"
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_80sdp"
             android:src="@mipmap/ic_launcher"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/_10sdp"/>
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:text="@string/app_name"
+            android:textSize="20sp"
+            android:textColor="@color/link_color"/>
 
         <TextView
             android:id="@+id/version"
             android:layout_width="@dimen/_150sdp"
-            android:layout_height="@dimen/_30sdp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/app_logo"
+            android:layout_height="@dimen/_25sdp"
             android:gravity="center"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:textColor="@color/link_color"/>
+
+        <LinearLayout
+            android:layout_width="@dimen/_250sdp"
+            android:layout_height="wrap_content"
+            android:id="@+id/layout"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:padding="7dp"
+                android:src="@drawable/rate_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                android:text="Rate Us"
+                android:textSize="16sp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:gravity="start|center_vertical"
+                android:id="@+id/rate_app"
+                android:padding="5dp"
+                android:textColor="@android:color/white" />
+
+            <ImageView
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:padding="7dp"
+                android:src="@drawable/share_icon"
+                android:tint="@android:color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_30sdp"
+                android:text="Share App"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:textSize="16sp"
+                android:id="@+id/share_app"
+                android:gravity="start|center_vertical"
+                android:textColor="@android:color/white"/>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/privacy_policy"
             android:layout_width="@dimen/_150sdp"
             android:layout_height="@dimen/_25sdp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/version"
             android:gravity="center_horizontal"
             android:textSize="16sp"
             android:autoLink="web"
+            android:layout_marginTop="@dimen/_5sdp"
             android:text="@string/privacy_policy"
+            android:textColorLink="@color/link_color"
+            android:textColor="@color/link_color"/>
+
+        <TextView
+            android:id="@+id/terms_condition"
+            android:layout_width="@dimen/_150sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:gravity="center_horizontal"
+            android:textSize="16sp"
+            android:autoLink="web"
+            android:text="@string/terms"
             android:textColorLink="@color/link_color"
             android:textColor="@color/link_color"/>
 
@@ -68,21 +140,17 @@
             android:id="@+id/developed_by"
             android:layout_width="@dimen/_200sdp"
             android:layout_height="@dimen/_30sdp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/privacy_policy"
-            android:layout_marginTop="@dimen/_10sdp"
             android:text="@string/developed_by"
             android:gravity="center"
             android:textSize="20sp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:textStyle="bold"
             android:textColor="@color/link_color"/>
 
         <ImageView
             android:id="@+id/aaptrix_logo"
             android:layout_width="@dimen/_200sdp"
-            android:layout_height="@dimen/_150sdp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/developed_by"
+            android:layout_height="@dimen/_130sdp"
             android:tint="@android:color/white"
             android:src="@drawable/aaptrix_app_info"/>
 
@@ -90,8 +158,6 @@
             android:id="@+id/website_text"
             android:layout_width="@dimen/_150sdp"
             android:layout_height="@dimen/_20sdp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/aaptrix_logo"
             android:text="@string/website"
             android:gravity="center"
             android:textStyle="bold"
@@ -147,6 +213,8 @@
             android:textColorLink="@color/link_color"
             android:text="@string/mail_address"/>
 
-    </RelativeLayout>
+    </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

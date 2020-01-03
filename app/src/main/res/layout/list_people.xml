@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         app:cardPreventCornerOverlap="true"
         android:layout_margin="5dp"
+        app:cardCornerRadius="5dp"
         app:cardElevation="5dp">
 
         <RelativeLayout
@@ -104,8 +105,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:id="@+id/delete_member"
+                    android:tint="@color/colorPrimaryDark"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/delete_icon"/>
+                    android:src="@drawable/delete_icon_white"/>
 
             </LinearLayout>
 

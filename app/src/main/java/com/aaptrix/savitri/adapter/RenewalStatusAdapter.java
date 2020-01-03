@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -36,6 +38,7 @@ public class RenewalStatusAdapter extends ArrayAdapter<ComplianceData> {
 	private Context context;
 	private int resource;
 	private ArrayList<ComplianceData> object;
+	private String type;
 	
 	class ViewHolder {
 		
@@ -52,11 +55,12 @@ public class RenewalStatusAdapter extends ArrayAdapter<ComplianceData> {
 		}
 	}
 	
-	public RenewalStatusAdapter(Context context, int resource, ArrayList<ComplianceData> object) {
+	public RenewalStatusAdapter(Context context, int resource, ArrayList<ComplianceData> object, String type) {
 		super(context, resource, object);
 		this.context = context;
 		this.resource = resource;
 		this.object = object;
+		this.type = type;
 	}
 	
 	@SuppressLint({"ViewHolder", "SetTextI18n"})
@@ -74,7 +78,17 @@ public class RenewalStatusAdapter extends ArrayAdapter<ComplianceData> {
 		String[] ddmmmyyyy = date.format().split("-");
 		holder.dueDate.setText(ddmmmyyyy[0]);
 		holder.dueMonth.setText(ddmmmyyyy[1] + ", " + ddmmmyyyy[2]);
-		holder.severity.setBackgroundColor(Color.parseColor(data.getAddedDate()));
+		if (type.equals("new")) {
+			holder.severity.setBackgroundColor(Color.parseColor(data.getAddedDate()));
+		} else {
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -1);
+			params.height = (int)context.getResources().getDimension(R.dimen._20sdp);
+			holder.severity.setLayoutParams(params);
+			holder.severity.setGravity(Gravity.CENTER);
+			holder.severity.setText("Expired");
+			holder.severity.setBackgroundColor(Color.parseColor("#FF0000"));
+			holder.severity.setTextColor(Color.parseColor("#FFFFFF"));
+		}
 		
 		SharedPreferences sp = context.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		String userRole = sp.getString(KEY_USER_ROLE, "");

@@ -27,14 +27,13 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusableInTouchMode="true"
-        android:descendantFocusability="beforeDescendants"
         android:layout_below="@id/toolbar">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
+        android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
         android:paddingTop="@dimen/_20sdp"
         android:paddingBottom="@dimen/_10sdp">
@@ -119,60 +118,76 @@
             android:layout_marginTop="@dimen/_15sdp"
             android:background="@drawable/custom_textbox"/>
 
-        <Spinner
-            android:layout_width="@dimen/_135sdp"
-            android:layout_height="@dimen/_40sdp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/layout"
+            android:layout_centerHorizontal="true"
             android:layout_below="@id/organisation_address"
-            android:id="@+id/organisation_state"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:background="@drawable/custom_textbox"/>
+            android:layout_marginStart="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_15sdp">
 
-        <Spinner
-            android:layout_width="@dimen/_135sdp"
-            android:layout_height="@dimen/_40sdp"
-            android:layout_below="@id/organisation_address"
-            android:layout_toEndOf="@id/organisation_state"
-            android:id="@+id/organisation_city"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:background="@drawable/custom_textbox"/>
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="@dimen/_40sdp"
+                android:id="@+id/organisation_state"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:background="@drawable/custom_textbox"/>
 
-        <EditText
-            android:layout_width="@dimen/_135sdp"
-            android:layout_height="@dimen/_40sdp"
-            android:id="@+id/organisation_district"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:layout_below="@id/organisation_state"
-            android:textColorHint="@color/hintcolor"
-            android:textColor="@color/colorPrimaryDark"
-            android:hint="District"
-            android:inputType="textCapWords"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:background="@drawable/custom_textbox"/>
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="@dimen/_40sdp"
+                android:id="@+id/organisation_city"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:background="@drawable/custom_textbox"/>
 
-        <EditText
-            android:layout_width="@dimen/_135sdp"
-            android:layout_height="@dimen/_40sdp"
-            android:layout_below="@id/organisation_city"
-            android:id="@+id/organisation_pincode"
-            android:textColorHint="@color/hintcolor"
-            android:textColor="@color/colorPrimaryDark"
-            android:hint="Pincode"
-            android:inputType="number"
-            android:maxLength="6"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:layout_toEndOf="@id/organisation_district"
-            android:layout_marginStart="@dimen/_15sdp"
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/layout"
+            android:layout_marginStart="@dimen/_30sdp"
             android:layout_marginTop="@dimen/_15sdp"
-            android:background="@drawable/custom_textbox"/>
+            android:layout_centerHorizontal="true"
+            android:id="@+id/id">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="@dimen/_40sdp"
+                android:id="@+id/organisation_district"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="District"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:inputType="textCapWords"
+                android:background="@drawable/custom_textbox"/>
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="@dimen/_40sdp"
+                android:id="@+id/organisation_pincode"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Pincode"
+                android:inputType="number"
+                android:maxLength="6"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:background="@drawable/custom_textbox"/>
+
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="@dimen/_150sdp"
@@ -194,7 +209,7 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/organisation_pincode"
+            android:layout_below="@id/id"
             android:layout_marginStart="@dimen/_25sdp"
             android:checked="false"
             android:id="@+id/tnc_checkbox"/>
@@ -203,7 +218,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tc_text"
-            android:layout_below="@id/organisation_pincode"
+            android:layout_below="@id/id"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/_10sdp"
             android:text="By registring you are agreeing to our    "

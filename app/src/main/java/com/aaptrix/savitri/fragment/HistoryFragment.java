@@ -19,8 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aaptrix.savitri.activities.Dashboard;
-import com.aaptrix.savitri.activities.PlansActivity;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,7 +28,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -42,7 +47,6 @@ import com.aaptrix.savitri.databeans.ComplianceData;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
@@ -55,9 +59,9 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
-import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_STORAGE_CYCLE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 import static android.content.Context.CONNECTIVITY_SERVICE;
+import static java.security.AccessController.getContext;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,8 +77,7 @@ public class HistoryFragment extends Fragment {
 	private ArrayList<ArrayList<ComplianceData>> sortedArray = new ArrayList<>();
 	private ArrayList<ComplianceData> viewArray = new ArrayList<>();
 	private Context context;
-	private FrameLayout frameLayout;
-	
+
 	public HistoryFragment() {
 		// Required empty public constructor
 	}
@@ -90,12 +93,12 @@ public class HistoryFragment extends Fragment {
 							 Bundle savedInstanceState) {
 		Bundle bundle = getArguments();
 		assert bundle != null;
-		if (bundle.getString("visibility").equals("yes")) {
+		if (Objects.equals(bundle.getString("visibility"), "yes")) {
 			View view = inflater.inflate(R.layout.fragment_history, container, false);
 			listView = view.findViewById(R.id.history_listview);
 			noHistory = view.findViewById(R.id.no_history);
 			progressBar = view.findViewById(R.id.progress_bar);
-			frameLayout = view.findViewById(R.id.history_layout);
+			FrameLayout frameLayout = view.findViewById(R.id.history_layout);
 			SharedPreferences sp = Objects.requireNonNull(context).getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 			strOrgId = sp.getString(KEY_ORG_ID, "");
 			strSessionId = sp.getString(KEY_SESSION_ID, "");
@@ -103,10 +106,40 @@ public class HistoryFragment extends Fragment {
 			if (checkConnection()) {
 				fetchHistory();
 			} else {
-				Snackbar snackbar = Snackbar.make(frameLayout, "No Internet Connection", Snackbar.LENGTH_LONG)
-						.setActionTextColor(Color.WHITE)
-						.setAction("Ok", null);
-				snackbar.show();
+				if (cycleCount.equals("1")) {
+					Snackbar snackbar = Snackbar.make(frameLayout, "No Internet Connection", Snackbar.LENGTH_INDEFINITE)
+							.setActionTextColor(Color.WHITE)
+							.setAction("Ok", null);
+					snackbar.show();
+				}
+				try {
+					FileNotFoundException fe = new FileNotFoundException();
+					File directory = context.getFilesDir();
+					ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(directory, "historyData")));
+					String json = in.readObject().toString();
+					JSONObject jsonObject = new JSONObject(json);
+					JSONArray jsonArray = jsonObject.getJSONArray("complianceHistory");
+					for (int i = 0; i < jsonArray.length(); i++) {
+						JSONObject jObject = jsonArray.getJSONObject(i);
+						ComplianceData data = new ComplianceData();
+						data.setId(jObject.getString("compliance_id"));
+						data.setName(jObject.getString("compliance_name"));
+						data.setIssueAuth(jObject.getString("compliance_issuing_auth"));
+						data.setNotes(jObject.getString("compliance_notes"));
+						data.setOtherAuth(jObject.getString("compliance_issuing_auth_other"));
+						data.setRefNo(jObject.getString("compliance_reference_no"));
+						data.setRenewCount(jObject.getString("compliance_renew_count"));
+						data.setValidfrom(jObject.getString("compliance_valid_from"));
+						data.setValidTo(jObject.getString("compliance_valid_upto"));
+						data.setCertificate(jObject.getString("compliance_certificates"));
+						complianceArray.add(data);
+					}
+					in.close();
+					throw fe;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				listItem();
 			}
 			return view;
 		} else {
@@ -145,6 +178,7 @@ public class HistoryFragment extends Fragment {
 						} else {
 							Log.e("res", result);
 							JSONObject jsonObject = new JSONObject(result);
+							cacheJson(jsonObject);
 							JSONArray jsonArray = jsonObject.getJSONArray("complianceHistory");
 							for (int i = 0; i < jsonArray.length(); i++) {
 								JSONObject jObject = jsonArray.getJSONObject(i);
@@ -190,7 +224,7 @@ public class HistoryFragment extends Fragment {
 		}
 		
 		for (int i = 0; i < sortedArray.size(); i++) {
-			if (sortedArray.get(i).size() == Integer.parseInt(cycleCount)) {
+			if (sortedArray.get(i).size() == Integer.parseInt(cycleCount)+1) {
 				for (int j = 0; j < sortedArray.get(i).size(); j++) {
 					if (sortedArray.get(i).get(j).getRenewCount().equals("1")) {
 						viewArray.add(sortedArray.get(i).get(j));
@@ -227,14 +261,31 @@ public class HistoryFragment extends Fragment {
 			}
 			Gson gson = new GsonBuilder().create();
 			JsonArray array = gson.toJsonTree(comArray).getAsJsonArray();
-			Log.e("array", array.toString());
 			intent.putExtra("complianceArray", array.toString());
 			intent.putExtra("count", cycleCount);
 			startActivity(intent);
 		});
 	}
+
+	private void cacheJson(final JSONObject jsonObject) {
+		new Thread(() -> {
+			ObjectOutput out;
+			String data = jsonObject.toString();
+			try {
+				if (getContext() != null) {
+					File directory = context.getFilesDir();
+					directory.mkdir();
+					out = new ObjectOutputStream(new FileOutputStream(new File(directory, "historyData")));
+					out.writeObject(data);
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}).start();
+	}
 	
-	public boolean checkConnection() {
+	private boolean checkConnection() {
 		ConnectivityManager connec;
 		connec = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
 		assert connec != null;

@@ -1,7 +1,9 @@
 package com.aaptrix.savitri.activities;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,7 @@ public class HistoryDetails extends AppCompatActivity {
 	LinearLayout historyLayout;
 	TextView comName, comRef, comAuth, comNotes;
 	ArrayList<ComplianceData> complianceArray;
+	CertificateAdapter adaptor;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,26 +74,31 @@ public class HistoryDetails extends AppCompatActivity {
 		LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		textViewParams.weight = 1f;
 		for (int i = complianceArray.size()-1; i >= 0; i--) {
+
 			LinearLayout layout = new LinearLayout(this);
 			layout.setOrientation(LinearLayout.HORIZONTAL);
 			layout.setLayoutParams(params);
+			layout.setGravity(Gravity.CENTER);
 			TextView from = new TextView(this);
 			from.setLayoutParams(textViewParams);
 			from.setBackgroundResource(android.R.color.white);
 			from.setPadding(padding, 1, padding, 10);
 			from.setText("Valid From");
+			from.setGravity(Gravity.CENTER);
 			layout.addView(from);
 			TextView upto = new TextView(this);
 			upto.setLayoutParams(textViewParams);
 			upto.setBackgroundResource(android.R.color.white);
 			upto.setPadding(padding, 1, padding, 10);
 			upto.setText("Valid Upto");
+			upto.setGravity(Gravity.CENTER);
 			layout.addView(upto);
 			historyLayout.addView(layout);
 			
 			LinearLayout dateLayout = new LinearLayout(this);
 			dateLayout.setOrientation(LinearLayout.HORIZONTAL);
 			dateLayout.setLayoutParams(params);
+			dateLayout.setGravity(Gravity.CENTER);
 			TextView fromDate = new TextView(this);
 			fromDate.setLayoutParams(textViewParams);
 			FormatDate date = new FormatDate(complianceArray.get(i).getValidfrom(), "yyyy-MM-dd", "dd-MM-yyyy");
@@ -99,6 +107,7 @@ public class HistoryDetails extends AppCompatActivity {
 			fromDate.setPadding(padding, 1, padding, 10);
 			fromDate.setTextColor(getResources().getColor(android.R.color.black));
 			fromDate.setTextSize(18);
+			fromDate.setGravity(Gravity.CENTER);
 			dateLayout.addView(fromDate);
 			TextView uptoDate = new TextView(this);
 			uptoDate.setLayoutParams(textViewParams);
@@ -108,6 +117,7 @@ public class HistoryDetails extends AppCompatActivity {
 			uptoDate.setPadding(padding, 1, padding, 10);
 			uptoDate.setTextColor(getResources().getColor(android.R.color.black));
 			uptoDate.setTextSize(18);
+			uptoDate.setGravity(Gravity.CENTER);
 			dateLayout.addView(uptoDate);
 			historyLayout.addView(dateLayout);
 			
@@ -126,13 +136,23 @@ public class HistoryDetails extends AppCompatActivity {
 						.replace("\\", ""));
 			}
 			
-			layoutParams.height = (int) (getResources().getDimension(R.dimen._70sdp)) * certUrl.size();
+			layoutParams.height = (int) (getResources().getDimension(R.dimen._210sdp)) * certUrl.size();
 			listView.setLayoutParams(layoutParams);
 			
-			CertificateAdapter adaptor = new CertificateAdapter(this, R.layout.list_certificate, certUrl, this);
+			adaptor = new CertificateAdapter(this, R.layout.list_certificate, certUrl, this);
 			listView.setAdapter(adaptor);
 			adaptor.notifyDataSetChanged();
 			historyLayout.addView(listView);
+
+			if (i != 0) {
+				LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+				p.height = 3;
+				p.setMargins(0, 0, 0, 20);
+				TextView textView = new TextView(this);
+				textView.setLayoutParams(p);
+				textView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+				historyLayout.addView(textView);
+			}
 		}
 		progressBar.setVisibility(View.GONE);
 	}
@@ -148,5 +168,11 @@ public class HistoryDetails extends AppCompatActivity {
 			onBackPressed();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		adaptor.deleteFile();
 	}
 }

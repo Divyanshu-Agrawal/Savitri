@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/layout"
     android:layout_height="match_parent"
     tools:context=".activities.UserProfile">
 
@@ -16,52 +17,242 @@
         app:title=""
         app:titleTextColor="@color/button_text" />
 
-    <RelativeLayout
-        android:id="@+id/relative_layout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_240sdp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/profile_image"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_240sdp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/user_placeholder"
-            app:layout_collapseMode="parallax"
-            app:layout_collapseParallaxMultiplier="0.5" />
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_20sdp">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentBottom="true"
-            android:background="#80111111" />
+            <RelativeLayout
+                android:id="@+id/relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_240sdp">
 
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentBottom="true"
-            android:layout_toStartOf="@id/edit_profile"
-            android:gravity="center_vertical"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textColor="@android:color/white"
-            android:textSize="22sp" />
+                <ImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_240sdp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/user_placeholder"
+                    app:layout_collapseMode="parallax"
+                    app:layout_collapseParallaxMultiplier="0.5" />
 
-        <ImageView
-            android:id="@+id/edit_profile"
-            android:layout_width="@dimen/_40sdp"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:src="@drawable/edit_icon" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_alignParentBottom="true"
+                    android:background="#80111111" />
 
-        <!--A view that draws a semi tranparent black overlay so that title is visible once expanded -->
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toStartOf="@id/edit_profile"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="22sp" />
 
-    </RelativeLayout>
+                <ImageView
+                    android:id="@+id/edit_profile"
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@android:color/transparent"
+                    android:padding="10dp"
+                    android:tint="@android:color/white"
+                    android:src="@drawable/more_icon" />
+
+                <!--A view that draws a semi tranparent black overlay so that title is visible once expanded -->
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/relative_layout">
+
+                <TextView
+                    android:id="@+id/org_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="User Organisation" />
+
+                <TextView
+                    android:id="@+id/user_org"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/org_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+                <TextView
+                    android:id="@+id/des_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:layout_below="@id/user_org"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="User Designation" />
+
+                <TextView
+                    android:id="@+id/user_designation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/des_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+                <TextView
+                    android:id="@+id/number_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_designation"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="Contact Number" />
+
+                <TextView
+                    android:id="@+id/user_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/number_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:autoLink="phone"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+                <TextView
+                    android:id="@+id/email_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_contact"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="Email Address" />
+
+                <TextView
+                    android:id="@+id/user_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/email_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:autoLink="email"
+                    android:textColorLink="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+                <TextView
+                    android:id="@+id/gender_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_email"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="Gender" />
+
+                <TextView
+                    android:id="@+id/user_gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/gender_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+                <TextView
+                    android:id="@+id/dob_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_gender"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="Date of Birth" />
+
+                <TextView
+                    android:id="@+id/user_dob"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/dob_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+                <TextView
+                    android:id="@+id/type_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_dob"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="User Type" />
+
+                <TextView
+                    android:id="@+id/user_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/type_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+                <TextView
+                    android:id="@+id/reg_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/user_type"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="5dp"
+                    android:text="User Registered On" />
+
+                <TextView
+                    android:id="@+id/user_reg_on"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reg_title"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/title_text" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -69,162 +260,6 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="gone" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/relative_layout">
-
-        <TextView
-            android:id="@+id/des_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/compliance_name"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
-            android:text="User Designation" />
-
-        <TextView
-            android:id="@+id/user_designation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/des_title"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/title_text" />
-
-        <TextView
-            android:id="@+id/number_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_designation"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
-            android:text="Contact Number" />
-
-        <TextView
-            android:id="@+id/user_contact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/number_title"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:autoLink="phone"
-            android:textColorLink="@android:color/black"
-            android:textSize="@dimen/title_text" />
-
-        <TextView
-            android:id="@+id/email_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_contact"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
-            android:text="Email Address" />
-
-        <TextView
-            android:id="@+id/user_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/email_title"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:autoLink="email"
-            android:textColorLink="@android:color/black"
-            android:textSize="@dimen/title_text" />
-
-        <TextView
-            android:id="@+id/gender_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_email"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
-            android:text="Gender" />
-
-        <TextView
-            android:id="@+id/user_gender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/gender_title"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/title_text" />
-
-        <TextView
-            android:id="@+id/dob_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_gender"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
-            android:text="Date of Birth" />
-
-        <TextView
-            android:id="@+id/user_dob"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/dob_title"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/title_text" />
-
-        <TextView
-            android:id="@+id/type_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_dob"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
-            android:text="User Type" />
-
-        <TextView
-            android:id="@+id/user_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/type_title"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/title_text" />
-
-        <TextView
-            android:id="@+id/reg_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/user_type"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp"
-            android:text="User Registered On" />
-
-        <TextView
-            android:id="@+id/user_reg_on"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/reg_title"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/title_text" />
-
-    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -7,30 +7,39 @@
     android:background="@drawable/background"
     tools:context=".activities.PlansActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="Plans"
-        app:titleTextColor="@color/button_text"
-        android:theme="@style/toolbarTheme"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    <ProgressBar
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:id="@+id/progress_bar"/>
+        android:id="@+id/app_bar"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <ListView
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/toolbarTheme"
+            app:title="Plans"
+            app:titleTextColor="@color/toolbarTextColor"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/colorAccent"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/colorPrimaryDark"
+            app:tabTextColor="@color/colorAccent"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:layout_below="@id/app_bar"
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:descendantFocusability="afterDescendants"
-        android:id="@+id/plans_listview"/>
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

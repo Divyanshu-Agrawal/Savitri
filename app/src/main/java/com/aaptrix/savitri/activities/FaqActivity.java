@@ -98,7 +98,7 @@ public class FaqActivity extends AppCompatActivity {
 			noFaq.setVisibility(View.GONE);
 			fetchFaq();
 		} else {
-			Snackbar snackbar = Snackbar.make(relativeLayout, "No Internet Connection", Snackbar.LENGTH_LONG)
+			Snackbar snackbar = Snackbar.make(relativeLayout, "No Internet Connection", Snackbar.LENGTH_INDEFINITE)
 					.setActionTextColor(Color.WHITE)
 					.setAction("Ok", null);
 			snackbar.show();

@@ -185,6 +185,11 @@
             app:iconPadding="10dp"
             app:iconSize="20dp"/>
 
+        <TextView
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"/>
+
         <com.google.android.material.button.MaterialButton
             android:layout_width="0dp"
             android:layout_weight="1"

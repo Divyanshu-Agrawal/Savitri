@@ -1,6 +1,7 @@
 package com.aaptrix.savitri.activities;
 
 import com.aaptrix.savitri.R;
+import com.aaptrix.savitri.asyncclass.LoginUser;
 import com.aaptrix.savitri.session.FileUtil;
 import com.aaptrix.savitri.session.URLs;
 import androidx.annotation.NonNull;
@@ -31,7 +32,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,6 +77,7 @@ public class UserDetails extends AppCompatActivity {
 	File imageFile = null;
 	ProgressBar progressBar;
 	String token;
+	View v;
 	
 	@SuppressLint("SetTextI18n")
 	@Override
@@ -126,8 +127,10 @@ public class UserDetails extends AppCompatActivity {
 		switch (type) {
 			case "verification":
 				submitBtn.setText("Register");
+				break;
 			case "registration" :
 				submitBtn.setText("Next");
+				break;
 		}
 		
 		genderArray.add("Select Gender*");
@@ -135,7 +138,7 @@ public class UserDetails extends AppCompatActivity {
 		genderArray.add("Female");
 		genderArray.add("Other");
 		
-		ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, genderArray);
+		ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genderArray);
 		typeAdapter.notifyDataSetChanged();
 		typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		userGender.setAdapter(typeAdapter);
@@ -150,11 +153,22 @@ public class UserDetails extends AppCompatActivity {
 				isPermissionGranted();
 			}
 		});
-		
+
 		userGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				((TextView) parent.getChildAt(position)).setTextColor(getResources().getColor(R.color.hintcolor));
+				if (view != null) {
+					v = view;
+					if (position == 0)
+						((TextView) view).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				} else {
+					if (position == 0)
+						((TextView) v).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) v).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				}
 				if (position != 0) {
 					strGender = genderArray.get(position);
 				}
@@ -287,15 +301,12 @@ public class UserDetails extends AppCompatActivity {
 	
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-										   @NonNull String permissions[], @NonNull int[] grantResults) {
-		switch (requestCode) {
-			case 1: {
-				if (grantResults.length > 0 &&grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-				}
-				
+										   @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == 1) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -347,8 +358,10 @@ public class UserDetails extends AppCompatActivity {
 				HttpPost httppost = new HttpPost(URLs.MEMBER_REGISTER_URL);
 				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
 				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-				
-				entityBuilder.addPart("prof_img", new FileBody(imageFile));
+
+				if (imageFile != null)
+				    entityBuilder.addPart("prof_img", new FileBody(imageFile));
+
 				entityBuilder.addTextBody("users_name", userName);
 				entityBuilder.addTextBody("users_mobileno", userMobile);
 				entityBuilder.addTextBody("users_email", userEmail);
@@ -371,17 +384,15 @@ public class UserDetails extends AppCompatActivity {
 		@Override
 		protected void onPostExecute(String result) {
 			if (result != null) {
-				Log.e("result", result);
 				try {
 					JSONObject jsonObject = new JSONObject(result);
 					if (jsonObject.getBoolean("success")) {
 						Toast.makeText(context, "Regsitered Successfully", Toast.LENGTH_SHORT).show();
-						LoginUser loginUser = new LoginUser(context);
+						LoginUser loginUser = new LoginUser(context, progressBar);
 						loginUser.execute(userMobile, userPassword, token);
 					} else {
 						progressBar.setVisibility(View.GONE);
 						Toast.makeText(context, "Error Occured", Toast.LENGTH_SHORT).show();
-						recreate();
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();

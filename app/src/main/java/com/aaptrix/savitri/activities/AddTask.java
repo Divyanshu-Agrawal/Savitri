@@ -2,7 +2,9 @@ package com.aaptrix.savitri.activities;
 
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.adapter.AssignTaskPeopleAdapter;
+import com.aaptrix.savitri.asyncclass.UploadTask;
 import com.aaptrix.savitri.databeans.PeopleData;
+import com.aaptrix.savitri.session.FormatDate;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +24,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,23 +41,33 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
 
+import static com.aaptrix.savitri.session.SharedPrefsNames.FLAG;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PEOPLE_ARRAY;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.PEOPLE_PREFS;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_ASSIGN;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DATE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DETAIL;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_NAME;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_PEOPLE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_PREFS;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 
 public class AddTask extends AppCompatActivity {
@@ -100,7 +113,15 @@ public class AddTask extends AppCompatActivity {
 		strOrgId = sp.getString(KEY_ORG_ID, "");
 		strSessionId = sp.getString(KEY_SESSION_ID, "");
 		strUserId = sp.getString(KEY_USER_ID, "");
-		fetchPeople(strOrgId, strSessionId, strUserId);
+		if (checkConnection()) {
+			fetchPeople(strOrgId, strSessionId, strUserId);
+		} else {
+			SharedPreferences preferences = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
+			GsonBuilder gsonBuilder = new GsonBuilder();
+			Type type = new TypeToken<ArrayList<PeopleData>>() {}.getType();
+			peopleArray = gsonBuilder.create().fromJson(preferences.getString(TASK_PEOPLE, ""), type);
+			listItems();
+		}
 		
 		type = getIntent().getStringExtra("type");
 		
@@ -127,7 +148,9 @@ public class AddTask extends AppCompatActivity {
 			strDate = taskDueDate;
 			name.setText(taskName);
 			details.setText(taskDetail);
-			dueDate.setText(taskDueDate);
+			FormatDate formatDate = new FormatDate(taskDueDate, "yyyy-MM-dd", "dd-MM-yyyy");
+			String validityDate = formatDate.format();
+			dueDate.setText(validityDate);
 			addTask.setText("Update Task");
 		}
 		
@@ -147,7 +170,7 @@ public class AddTask extends AppCompatActivity {
 			DatePickerDialog datePickerDialog = new DatePickerDialog(this, date, myCalendar
 					.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
 					myCalendar.get(Calendar.DAY_OF_MONTH));
-			datePickerDialog.getDatePicker().setMinDate(myCalendar.getTimeInMillis() - 1000);
+			datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis() - 1000);
 			datePickerDialog.show();
 		});
 		
@@ -165,8 +188,22 @@ public class AddTask extends AppCompatActivity {
 				dueDate.setError("Please Select Due Date");
 			} else {
 				if (type.equals("add")) {
-					UploadTask uploadTask = new UploadTask(this);
-					uploadTask.execute(strOrgId, strUserId, strSessionId, name.getText().toString(), details.getText().toString(), strDate, peopleArray);
+					if (checkConnection()) {
+						UploadTask uploadTask = new UploadTask(this, progressBar, "online");
+						uploadTask.execute(strOrgId, strUserId, strSessionId,
+								name.getText().toString(), details.getText().toString(), strDate, peopleArray);
+					} else {
+						Toast.makeText(this, "Internet connection not available details will be saved when device is connected to internet", Toast.LENGTH_SHORT).show();
+						SharedPreferences task_sp = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
+						SharedPreferences.Editor editor = task_sp.edit();
+						editor.putBoolean(FLAG, true);
+						editor.putString(TASK_NAME, name.getText().toString());
+						editor.putString(TASK_DETAIL, details.getText().toString());
+						editor.putString(TASK_DATE, strDate);
+						editor.putString(TASK_ASSIGN, peopleArray);
+						editor.apply();
+						startActivity(new Intent(this, TasksActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+					}
 				} else if (type.equals("update")) {
 					UpdateTask uploadTask = new UpdateTask(this);
 					uploadTask.execute(strOrgId, strUserId, strSessionId, name.getText().toString(),
@@ -174,6 +211,13 @@ public class AddTask extends AppCompatActivity {
 				}
 			}
 		});
+	}
+
+	private boolean checkConnection() {
+		ConnectivityManager connec;
+		connec = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		assert connec != null;
+		return connec.getActiveNetworkInfo() != null && connec.getActiveNetworkInfo().isAvailable() && connec.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 	
 	private void hideKeyboard(View view) {
@@ -237,86 +281,7 @@ public class AddTask extends AppCompatActivity {
 		adapter.notifyDataSetChanged();
 	}
 	
-	@SuppressLint("StaticFieldLeak")
-	class UploadTask extends AsyncTask<String, String, String> {
-		
-		@SuppressLint("StaticFieldLeak")
-		private Context context;
-		
-		UploadTask(Context context) {
-			this.context = context;
-		}
-		
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			progressBar.setVisibility(View.VISIBLE);
-			progressBar.bringToFront();
-		}
-		
-		
-		@Override
-		protected String doInBackground(String... params) {
-			
-			String orgId = params[0];
-			String userId = params[1];
-			String sessionId = params[2];
-			String name = params[3];
-			String desc = params[4];
-			String dueDate = params[5];
-			String assignPeople = params[6];
-			
-			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost(URLs.ADD_TASK);
-				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-				entityBuilder.addTextBody("org_details_id", orgId);
-				entityBuilder.addTextBody("tasks_details_name", name);
-				entityBuilder.addTextBody("tasks_details_desc", desc);
-				entityBuilder.addTextBody("tasks_details_due_date", dueDate);
-				entityBuilder.addTextBody("users_details_id", userId);
-				entityBuilder.addTextBody("assign_users", assignPeople);
-				entityBuilder.addTextBody("app_session_id", sessionId);
-				HttpEntity entity = entityBuilder.build();
-				httppost.setEntity(entity);
-				HttpResponse response = httpclient.execute(httppost);
-				HttpEntity httpEntity = response.getEntity();
-				return EntityUtils.toString(httpEntity);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-		
-		@Override
-		protected void onPostExecute(String result) {
-			if (result != null) {
-				Log.e("result", result);
-				try {
-					JSONObject jsonObject = new JSONObject(result);
-					if (jsonObject.getBoolean("success")) {
-						Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT).show();
-						startActivity(new Intent(context, TasksActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-					} else if (result.contains("\"success\":false,\"msg\":\"Session Expire\"")) {
-						progressBar.setVisibility(View.GONE);
-						Toast.makeText(context, "Your Session is expired please login again", Toast.LENGTH_SHORT).show();
-						SharedPrefsManager.getInstance(context).logout();
-						Intent intent = new Intent(context, AppLogin.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(intent);
-						finish();
-					} else {
-						progressBar.setVisibility(View.GONE);
-						Toast.makeText(context, "Error Occured. Please try again", Toast.LENGTH_SHORT).show();
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-			}
-			super.onPostExecute(result);
-		}
-	}
+
 	
 	@SuppressLint("StaticFieldLeak")
 	class UpdateTask extends AsyncTask<String, String, String> {

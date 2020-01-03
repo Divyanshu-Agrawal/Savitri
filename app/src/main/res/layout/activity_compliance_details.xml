@@ -19,15 +19,16 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusableInTouchMode="true"
-        android:descendantFocusability="beforeDescendants"
         android:layout_below="@id/toolbar"
         android:scrollbarThumbVertical="@null">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/_40sdp">
+            android:focusableInTouchMode="true"
+            android:descendantFocusability="beforeDescendants"
+            android:paddingBottom="@dimen/_40sdp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -42,7 +43,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/name_title"
                 android:id="@+id/compliance_name"
                 android:textSize="@dimen/title_text"
                 android:paddingStart="10dp"
@@ -52,28 +52,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/valid_layout"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:id="@+id/note_title"
-                android:text="Additional Notes"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="5dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/note_title"
-                android:textSize="@dimen/title_text"
-                android:textColor="@android:color/black"
-                android:id="@+id/compliance_notes"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/compliance_name"
                 android:id="@+id/issueauth_title"
                 android:text="Issuing Authority"
                 android:layout_marginTop="@dimen/_10sdp"
@@ -84,7 +62,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/issueauth_title"
                 android:id="@+id/compliance_issue_auth"
                 android:textSize="@dimen/title_text"
                 android:textColor="@android:color/black"
@@ -94,7 +71,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/compliance_issue_auth"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="Reference No."
                 android:paddingStart="10dp"
@@ -105,33 +81,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/ref_no_title"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/title_text"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:id="@+id/compliance_ref_no"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/compliance_notes"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:text="Added On"
-                android:paddingEnd="10dp"
-                android:paddingStart="10dp"
-                android:paddingBottom="5dp"
-                android:id="@+id/added_on_title"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/added_on_title"
-                android:textSize="@dimen/title_text"
-                android:textColor="@android:color/black"
-                android:id="@+id/compliance_added_on"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -194,7 +148,44 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/compliance_added_on"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:id="@+id/note_title"
+                android:text="Additional Notes"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:id="@+id/compliance_notes"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Added On"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:paddingBottom="5dp"
+                android:id="@+id/added_on_title"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:id="@+id/compliance_added_on"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="Attached Certificates"
                 android:paddingBottom="5dp"
@@ -202,18 +193,16 @@
                 android:paddingStart="10dp"
                 android:id="@+id/cert_title" />
 
-
             <ListView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_300sdp"
-                android:layout_below="@id/cert_title"
+                android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:dividerHeight="0dp"
                 android:divider="@null"
-                android:scrollbars="none"
+                android:paddingBottom="@dimen/_10sdp"
                 android:id="@+id/certificate_listview"/>
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </ScrollView>
 

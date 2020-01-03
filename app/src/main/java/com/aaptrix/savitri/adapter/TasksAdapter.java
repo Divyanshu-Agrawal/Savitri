@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,16 +94,20 @@ public class TasksAdapter extends ArrayAdapter<TasksData> {
 			}
 			
 			view.setOnClickListener(v -> {
-				Intent intent = new Intent(context, TaskDetail.class);
-				intent.putExtra("assignedBy", data.getAssignedBy());
-				intent.putExtra("assignName", data.getAssignedByName());
-				intent.putExtra("assignedTo", data.getAssignedTo());
-				intent.putExtra("name", data.getTaskName());
-				intent.putExtra("desc", data.getTaskDesc());
-				intent.putExtra("due_date", data.getTaskDueDate());
-				intent.putExtra("id", data.getTaskId());
-				intent.putExtra("status", data.getStatus());
-				context.startActivity(intent);
+				if (data.getTaskId() != null) {
+					Intent intent = new Intent(context, TaskDetail.class);
+					intent.putExtra("assignedBy", data.getAssignedBy());
+					intent.putExtra("assignName", data.getAssignedByName());
+					intent.putExtra("assignedTo", data.getAssignedTo());
+					intent.putExtra("name", data.getTaskName());
+					intent.putExtra("desc", data.getTaskDesc());
+					intent.putExtra("due_date", data.getTaskDueDate());
+					intent.putExtra("id", data.getTaskId());
+					intent.putExtra("status", data.getStatus());
+					context.startActivity(intent);
+				} else {
+					Toast.makeText(context, "Task not uploaded yet please connect to internet", Toast.LENGTH_SHORT).show();
+				}
 			});
 			
 			FormatDate date = new FormatDate(data.getTaskDueDate(), "yyyy-MM-dd", "dd-MMM-yyyy");

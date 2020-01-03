@@ -29,7 +29,6 @@ public class FileUtil {
 		String[] splitName = splitFileName(fileName);
 		File tempFile = File.createTempFile(splitName[0], splitName[1]);
 		tempFile = rename(tempFile, fileName);
-		tempFile.deleteOnExit();
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(tempFile);

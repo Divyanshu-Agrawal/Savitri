@@ -3,9 +3,19 @@ package com.aaptrix.savitri.activities;
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.adapter.PlansAdapter;
 import com.aaptrix.savitri.databeans.PlansData;
+import com.aaptrix.savitri.fragment.FreePlanFragment;
+import com.aaptrix.savitri.fragment.PlanFragment;
+import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
+import com.google.android.material.tabs.TabLayout;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -34,83 +44,85 @@ import java.util.ArrayList;
 public class PlansActivity extends AppCompatActivity {
 	
 	Toolbar toolbar;
-	ProgressBar progressBar;
-	ListView listView;
-	PlansAdapter adapter;
-	ArrayList<PlansData> plansArray = new ArrayList<>();
+	TabLayout tabLayout;
+	ViewPager pager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_plans);
 		toolbar = findViewById(R.id.toolbar);
-		progressBar = findViewById(R.id.progress_bar);
-		listView = findViewById(R.id.plans_listview);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayShowHomeEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		progressBar.setVisibility(View.VISIBLE);
-		fetchPlans();
-	}
-	
-	private void fetchPlans() {
-		new Thread(() -> {
-			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost(URLs.ALL_PLANS);
-				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-				HttpEntity entity = entityBuilder.build();
-				httppost.setEntity(entity);
-				HttpResponse response = httpclient.execute(httppost);
-				HttpEntity httpEntity = response.getEntity();
-				String result = EntityUtils.toString(httpEntity);
-				Handler handler = new Handler(Looper.getMainLooper());
-				handler.post(() -> {
-					try {
-						if (result.equals("null")) {
-							progressBar.setVisibility(View.GONE);
-						} else {
-							Log.e("res", result);
-							JSONObject jsonObject = new JSONObject(result);
-							JSONArray jsonArray = jsonObject.getJSONArray("allPlans");
-							for (int i = 0; i < jsonArray.length(); i++) {
-								JSONObject jObject = jsonArray.getJSONObject(i);
-								PlansData data = new PlansData();
-								data.setId(jObject.getString("plan_id"));
-								data.setName(jObject.getString("plan_name"));
-								data.setComplianceLimit(jObject.getString("plan_compliance_limit"));
-								data.setDataDownload(jObject.getString("plan_data_download"));
-								data.setStorageCycle(jObject.getString("plan_data_storage_cycle"));
-								data.setAlertByApp(jObject.getString("plan_alert_by_app"));
-								data.setAlertByEmail(jObject.getString("plan_alert_by_email"));
-								data.setAlertBySms(jObject.getString("plan_alert_by_sms"));
-								data.setPlanCost(jObject.getString("plan_cost"));
-								data.setUserLimit(jObject.getString("plan_user_assign_limit"));
-								plansArray.add(data);
-							}
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-					listItem();
-				});
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}).start();
-	}
-	
-	private void listItem() {
-		progressBar.setVisibility(View.GONE);
-		adapter = new PlansAdapter(this, R.layout.list_plans, plansArray);
-		listView.setAdapter(adapter);
+		pager = findViewById(R.id.viewpager);
+		tabLayout = findViewById(R.id.tablayout);
+		tabLayout.setupWithViewPager(pager);
+		tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+		tabLayout.addTab(tabLayout.newTab().setText("Paid"));
+		tabLayout.addTab(tabLayout.newTab().setText("Free"));
+		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+		pager.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
+		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+			@Override
+			public void onTabSelected(TabLayout.Tab tab) {
+				pager.setCurrentItem(tab.getPosition(), true);
+			}
+
+			@Override
+			public void onTabUnselected(TabLayout.Tab tab) {
+
+			}
+
+			@Override
+			public void onTabReselected(TabLayout.Tab tab) {
+
+			}
+		});
+	}
+
+	private class ViewPagerAdapter extends FragmentStatePagerAdapter {
+
+		ViewPagerAdapter(FragmentManager manager) {
+			super(manager);
+		}
+
+		@NonNull
+		@Override
+		public Fragment getItem(int position) {
+			switch (position) {
+				case 0:
+					return new PlanFragment();
+				case 1:
+					return new FreePlanFragment();
+				default:
+					return null;
+			}
+		}
+
+		@Override
+		public int getCount() {
+			return 2;
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			String title = null;
+			if (position == 0) {
+				title = "Paid";
+			} else if (position == 1) {
+				title = "Free";
+			}
+			return title;
+		}
+
 	}
 	
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
+		finish();
 	}
 	
 	@Override

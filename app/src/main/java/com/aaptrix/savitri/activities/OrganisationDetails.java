@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aaptrix.savitri.asyncclass.LoginUser;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -55,7 +56,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class OrganisationDetails extends AppCompatActivity {
 	
 	Toolbar toolbar;
-	EditText orgName, orgType, orgLandline, orgAddress, orgPincode, orgDistrict, orgDetails;
+	EditText orgName, orgType, orgLandline, orgAddress, orgPincode, orgDetails, orgDistrict;
 	Spinner orgCity, orgState;
 	MaterialButton registerBtn, termsBtn, privacyBtn;
 	String userName, userDob, userDesignation, userEmail, userGender, userPassword, userMobile;
@@ -70,6 +71,7 @@ public class OrganisationDetails extends AppCompatActivity {
 	private ArrayList<String> cityarray = new ArrayList<>();
 	ArrayAdapter<String> cityAdapter;
 	String token;
+	View v;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -173,7 +175,18 @@ public class OrganisationDetails extends AppCompatActivity {
 		orgState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				((TextView) parent.getChildAt(position)).setTextColor(getResources().getColor(R.color.hintcolor));
+				if (view != null) {
+					v = view;
+					if (position == 0)
+						((TextView) view).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				} else {
+					if (position == 0)
+						((TextView) v).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) v).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				}
 				if (position != 0) {
 					cityarray.clear();
 					orgCity.setEnabled(true);
@@ -210,7 +223,7 @@ public class OrganisationDetails extends AppCompatActivity {
 			} else if (TextUtils.isEmpty(strCity)) {
 				Toast.makeText(this, "Please Select Organisation City", Toast.LENGTH_SHORT).show();
 			} else if (TextUtils.isEmpty(orgDistrict.getText().toString())) {
-				orgDistrict.setError("Please Enter Organisation District");
+				orgDistrict.setError("Please Enter District");
 				orgDistrict.requestFocus();
 			} else if (TextUtils.isEmpty(strState)) {
 				Toast.makeText(this, "Please Select Organisation State", Toast.LENGTH_SHORT).show();
@@ -307,7 +320,18 @@ public class OrganisationDetails extends AppCompatActivity {
 		orgCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				((TextView) parent.getChildAt(position)).setTextColor(getResources().getColor(R.color.hintcolor));
+				if (view != null) {
+					v = view;
+					if (position == 0)
+						((TextView) view).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				} else {
+					if (position == 0)
+						((TextView) v).setTextColor(getResources().getColor(R.color.hintcolor));
+					else
+						((TextView) v).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+				}
 				if (position != 0) {
 					strCity = city.get(position);
 				} else {
@@ -409,7 +433,7 @@ public class OrganisationDetails extends AppCompatActivity {
 					JSONObject jsonObject = new JSONObject(result);
 					if (jsonObject.getBoolean("success")) {
 						Toast.makeText(context, "Regsitered Successfully", Toast.LENGTH_SHORT).show();
-						LoginUser loginUser = new LoginUser(context);
+						LoginUser loginUser = new LoginUser(context, progressBar);
 						loginUser.execute(userMobile, userPassword, token);
 					} else {
 						progressBar.setVisibility(View.GONE);

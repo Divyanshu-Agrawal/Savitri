@@ -34,6 +34,56 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_layout"
+        android:visibility="gone"
+        android:background="#80111111">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardPreventCornerOverlap="true"
+            android:layout_marginStart="@dimen/_30sdp"
+            app:cardElevation="5dp"
+            app:cardBackgroundColor="@android:color/white"
+            app:contentPaddingTop="10dp"
+            app:contentPaddingBottom="10dp"
+            android:layout_centerInParent="true"
+            app:cardCornerRadius="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible"
+                android:orientation="horizontal">
+
+                <ProgressBar
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_weight="2"
+                    android:gravity="start"
+                    android:padding="10dp"
+                    android:singleLine="true"
+                    android:text="Please Wait"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="30sp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
     <androidx.viewpager.widget.ViewPager
         android:layout_below="@id/app_bar"
         android:id="@+id/viewpager"

@@ -113,38 +113,46 @@
                 android:layout_marginTop="@dimen/_15sdp"
                 android:background="@drawable/custom_textbox"/>
 
-            <EditText
-                android:layout_width="@dimen/_135sdp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
-                android:id="@+id/add_compliance_valid_from"
-                android:textColorHint="@color/hintcolor"
-                android:textColor="@color/colorPrimaryDark"
-                android:hint="Valid From"
-                android:focusable="false"
-                android:inputType="date"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
                 android:layout_below="@id/add_compliance_note"
-                android:layout_marginStart="@dimen/_15sdp"
+                android:id="@+id/layout"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:background="@drawable/custom_textbox"/>
+                android:orientation="horizontal">
 
-            <EditText
-                android:layout_width="@dimen/_135sdp"
-                android:layout_height="@dimen/_40sdp"
-                android:id="@+id/add_compliance_valid_upto"
-                android:textColorHint="@color/hintcolor"
-                android:textColor="@color/colorPrimaryDark"
-                android:hint="Valid Upto"
-                android:focusable="false"
-                android:inputType="date"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_below="@id/add_compliance_note"
-                android:layout_marginStart="@dimen/_15sdp"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:layout_toEndOf="@id/add_compliance_valid_from"
-                android:background="@drawable/custom_textbox"/>
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="@dimen/_40sdp"
+                    android:id="@+id/add_compliance_valid_from"
+                    android:textColorHint="@color/hintcolor"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:hint="Valid From"
+                    android:focusable="false"
+                    android:inputType="date"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:background="@drawable/custom_textbox"/>
+
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="@dimen/_40sdp"
+                    android:id="@+id/add_compliance_valid_upto"
+                    android:textColorHint="@color/hintcolor"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:hint="Valid Upto"
+                    android:focusable="false"
+                    android:inputType="date"
+                    android:paddingStart="10dp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:paddingEnd="10dp"
+                    android:background="@drawable/custom_textbox"/>
+
+            </LinearLayout>
 
             <Button
                 android:layout_width="wrap_content"
@@ -153,7 +161,7 @@
                 app:strokeColor="@color/colorPrimaryDark"
                 app:strokeWidth="1dp"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:layout_below="@id/add_compliance_valid_from"
+                android:layout_below="@id/layout"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:layout_marginStart="@dimen/_15sdp"
                 android:text="Upload Certificate"
@@ -166,10 +174,10 @@
                 android:layout_width="@dimen/_150sdp"
                 android:layout_height="@dimen/_30sdp"
                 android:layout_toEndOf="@id/add_compliance_certificate"
-                android:layout_below="@id/add_compliance_valid_upto"
+                android:layout_below="@id/layout"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_15sdp"
-                android:text="You can upload upto 5 certificates (200KB each)"
+                android:text="You can upload upto 5 certificates (1MB)"
                 android:gravity="center_vertical"
                 android:id="@+id/certificate_count"/>
 

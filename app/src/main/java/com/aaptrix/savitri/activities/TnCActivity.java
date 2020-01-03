@@ -3,6 +3,7 @@ package com.aaptrix.savitri.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ public class TnCActivity extends AppCompatActivity {
 	ProgressBar progressBar;
 	String type, url;
 	
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,7 +56,6 @@ public class TnCActivity extends AppCompatActivity {
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setBuiltInZoomControls(false);
-		webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 		webView.loadUrl(url);
 	}
 	

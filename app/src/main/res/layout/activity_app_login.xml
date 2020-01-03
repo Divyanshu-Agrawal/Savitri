@@ -20,12 +20,13 @@
         android:paddingBottom="@dimen/_50sdp"
         android:id="@+id/phone_number_layout"
         android:visibility="visible"
+        android:clickable="true"
         android:focusableInTouchMode="true"
         android:layout_centerInParent="true">
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_150sdp"
+            android:layout_height="@dimen/_100sdp"
             android:id="@+id/login_image"
             android:src="@drawable/savitri_logo"/>
 
@@ -78,7 +79,7 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_150sdp"
+            android:layout_height="@dimen/_100sdp"
             android:id="@+id/image"
             android:src="@drawable/savitri_logo"/>
 
@@ -141,7 +142,7 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_150sdp"
+            android:layout_height="@dimen/_100sdp"
             android:id="@+id/otp_image"
             android:src="@drawable/savitri_logo"/>
 
@@ -218,19 +219,19 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_150sdp"
-            android:id="@+id/register_image"
+            android:layout_height="@dimen/_100sdp"
+            android:id="@+id/reg_image"
             android:src="@drawable/savitri_logo"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40sdp"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/register_image"
+            android:layout_below="@id/reg_image"
             android:id="@+id/user_new_password"
             android:textColorHint="@color/hintcolor"
             android:textColor="@color/colorPrimaryDark"
-            android:hint="Enter Password"
+            android:hint="Set Password"
             android:inputType="textPassword"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"

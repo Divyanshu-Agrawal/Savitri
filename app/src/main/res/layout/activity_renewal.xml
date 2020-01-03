@@ -4,82 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
     tools:context=".activities.RenewalActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="Renewal Status"
-        app:titleTextColor="@color/button_text"
-        android:theme="@style/toolbarTheme"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        android:layout_height="wrap_content"
+        android:id="@+id/app_bar"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_below="@id/toolbar"
-        android:id="@+id/header_layout">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:text="Due Date"
-            android:background="@android:color/white"
-            android:textColor="@android:color/black"
-            android:gravity="center"
-            android:textSize="@dimen/title_text"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.08"
-            android:text="Compliance Details"
-            android:gravity="center_vertical"
-            android:paddingStart="10dp"
-            android:background="@android:color/white"
-            android:textColor="@android:color/black"
-            android:paddingEnd="10dp"
-            android:textSize="@dimen/title_text"/>
-
-    </LinearLayout>
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/swipe_refresh"
-        android:layout_below="@id/header_layout"
-        android:animateLayoutChanges="true">
-
-        <ListView
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:descendantFocusability="afterDescendants"
-            android:id="@+id/renewal_listview"/>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Renewal Status"
+            app:titleTextColor="@color/button_text"
+            android:theme="@style/toolbarTheme"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/colorAccent"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/colorPrimaryDark"
+            app:tabTextColor="@color/colorAccent"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Nothing Here"
-        android:textSize="24sp"
-        android:visibility="gone"
-        android:textColor="@color/colorPrimaryDark"
-        android:id="@+id/no_renewal"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:id="@+id/progress_bar"/>
+    <androidx.viewpager.widget.ViewPager
+        android:layout_below="@id/app_bar"
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

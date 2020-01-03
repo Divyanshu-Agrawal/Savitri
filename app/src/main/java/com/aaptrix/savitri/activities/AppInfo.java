@@ -2,8 +2,11 @@ package com.aaptrix.savitri.activities;
 
 import com.aaptrix.savitri.BuildConfig;
 import com.aaptrix.savitri.R;
+import com.aaptrix.savitri.session.URLs;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ShareCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -13,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,10 +25,11 @@ import java.util.Objects;
 public class AppInfo extends AppCompatActivity {
 	
 	String versionName;
-	TextView version, webUrl, contactNumber, contactEmail, privacyPolicy;
+	TextView version, webUrl, contactNumber, contactEmail, privacyPolicy, tnc;
 	Toolbar toolbar;
 	WebView webView;
-	RelativeLayout relativeLayout;
+	LinearLayout relativeLayout;
+	TextView rate, share;
 	
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
@@ -40,6 +45,9 @@ public class AppInfo extends AppCompatActivity {
 		WebSettings webSettings = webView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setBuiltInZoomControls(false);
+		rate = findViewById(R.id.rate_app);
+		share = findViewById(R.id.share_app);
+		tnc = findViewById(R.id.terms_condition);
 		
 		toolbar = findViewById(R.id.app_info_toolbar);
 		setSupportActionBar(toolbar);
@@ -73,10 +81,32 @@ public class AppInfo extends AppCompatActivity {
 		});
 		
 		privacyPolicy.setOnClickListener(v -> {
-			webView.loadUrl("http://www.aaptrix.com/app-policies/privacy_policy.html");
-			webView.setVisibility(View.VISIBLE);
-			relativeLayout.setVisibility(View.GONE);
-			getSupportActionBar().setTitle("Privacy Policy");
+			Intent intent = new Intent(this, TnCActivity.class);
+			intent.putExtra("type", "privacy");
+			intent.putExtra("url", URLs.PRIVACY_URL);
+			startActivity(intent);
+		});
+
+		tnc.setOnClickListener(v -> {
+			Intent intent = new Intent(this, TnCActivity.class);
+			intent.putExtra("type", "tnc");
+			intent.putExtra("url", URLs.TnC_URL);
+			startActivity(intent);
+		});
+
+		rate.setOnClickListener(v -> {
+			Intent i = new Intent(Intent.ACTION_VIEW);
+			i.setData(Uri.parse("market://details?id=com.aaptrix.savitri"));
+			startActivity(i);
+		});
+
+		share.setOnClickListener(v -> {
+			String msg = "Install Savitri: Your compliance tracking assistant, and never miss any compliance renewals." + " " + "\nhttp://play.google.com/store/apps/details?id=com.aaptrix.savitri";
+			ShareCompat.IntentBuilder.from(this)
+					.setType("text/plain")
+					.setChooserTitle("Share via...")
+					.setText(msg)
+					.startChooser();
 		});
 	}
 	

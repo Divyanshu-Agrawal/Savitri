@@ -1,6 +1,7 @@
 package com.aaptrix.savitri.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +42,8 @@ import com.aaptrix.savitri.databeans.PeopleData;
 import com.aaptrix.savitri.dialogs.AddMembersDialog;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
+import com.google.android.material.snackbar.Snackbar;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -54,6 +58,8 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_MEMBER_COUNT;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_PLAN_TYPE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PEOPLE_COUNT;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
@@ -69,9 +75,10 @@ public class PeopleActivity extends AppCompatActivity {
 	ProgressBar progressBar;
 	PeopleAdapter adapter;
 	ArrayList<PeopleData> peopleArray = new ArrayList<>();
-	String strOrgId, strSessionId, strUserId;
+	String strOrgId, strSessionId, strUserId, strPlanType;
 	SharedPreferences sp;
 	int memberCount;
+	RelativeLayout layout;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +93,13 @@ public class PeopleActivity extends AppCompatActivity {
 		addPeople = findViewById(R.id.add_people);
 		noPeople = findViewById(R.id.no_people);
 		progressBar = findViewById(R.id.progress_bar);
+		layout = findViewById(R.id.layout);
 		sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		strOrgId = sp.getString(KEY_ORG_ID, "");
 		strSessionId = sp.getString(KEY_SESSION_ID, "");
 		strUserId = sp.getString(KEY_USER_ID, "");
 		memberCount = sp.getInt(KEY_MEMBER_COUNT, 0);
+		strPlanType = sp.getString(KEY_ORG_PLAN_TYPE, "");
 		
 		if (sp.getString(KEY_USER_ROLE, "").equals("Admin")) {
 			addPeople.setVisibility(View.VISIBLE);
@@ -100,16 +109,17 @@ public class PeopleActivity extends AppCompatActivity {
 		progressBar.setVisibility(View.VISIBLE);
 		
 		addPeople.setOnClickListener(v -> {
-			if (peopleArray.size() < memberCount) {
+			if (sp.getInt(KEY_PEOPLE_COUNT, 0) < memberCount) {
 				AddMembersDialog dialog = new AddMembersDialog(this);
 				Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 				dialog.show();
 			} else {
-				new AlertDialog.Builder(this)
-						.setMessage("Please upgrade your plan to add more members.")
-						.setPositiveButton("Upgrade", (dialog, which) -> startActivity(new Intent(this, PlansActivity.class)))
-						.setNegativeButton("Close", null)
-						.show();
+				DialogInterface.OnClickListener onClickListener = (dialog, which) -> startActivity(new Intent(this, PlansActivity.class));
+					new AlertDialog.Builder(this)
+							.setMessage("Please upgrade your plan to add more members.")
+							.setPositiveButton("Upgrade", onClickListener)
+							.setNegativeButton("Close", null)
+							.show();
 			}
 		});
 		
@@ -118,6 +128,10 @@ public class PeopleActivity extends AppCompatActivity {
 			fetchPeople();
 		} else {
 			try {
+				Snackbar snackbar = Snackbar.make(layout, "No Internet Connection", Snackbar.LENGTH_INDEFINITE)
+						.setActionTextColor(Color.WHITE)
+						.setAction("Ok", null);
+				snackbar.show();
 				FileNotFoundException fe = new FileNotFoundException();
 				File directory = this.getFilesDir();
 				ObjectInputStream in = new ObjectInputStream(new FileInputStream(new File(directory, "peopleData")));
@@ -217,6 +231,7 @@ public class PeopleActivity extends AppCompatActivity {
 	}
 	
 	private void listItem() {
+		sp.edit().putInt(KEY_PEOPLE_COUNT, peopleArray.size()).apply();
 		progressBar.setVisibility(View.GONE);
 		adapter = new PeopleAdapter(this, R.layout.list_people, peopleArray);
 		listView.setAdapter(adapter);

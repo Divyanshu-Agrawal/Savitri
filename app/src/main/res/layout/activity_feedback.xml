@@ -82,15 +82,25 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_200sdp"
         android:layout_below="@id/feed_layout"
-        android:layout_margin="@dimen/_20sdp"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:background="@drawable/custom_textbox"
         android:hint="Please share your feedback"
         android:gravity="start|top"
         android:padding="10dp"
+        android:maxLength="500"
         android:inputType="textCapSentences|textMultiLine"
         android:id="@+id/user_feedback"
         android:textColorHint="@color/hintcolor"
         android:textColor="@color/colorPrimaryDark"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/user_feedback"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:text="(Word Limit 500)"/>
 
     <com.google.android.material.button.MaterialButton
         android:layout_width="@dimen/_200sdp"

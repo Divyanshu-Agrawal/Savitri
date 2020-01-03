@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aaptrix.savitri.activities.PlansActivity;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONArray;
@@ -37,6 +40,8 @@ import com.aaptrix.savitri.databeans.PeopleData;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -47,6 +52,7 @@ import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_PLAN_TYPE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PEOPLE_ARRAY;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
@@ -63,7 +69,8 @@ public class AssignTaskDialog extends Dialog {
 	private TextView noPeople;
 //	private ArrayList<String> taskAssign;
 	private String strSession;
-	private String taskId, type;
+	private String taskId, type, planId;
+	private MaterialButton assign;
 	
 	public AssignTaskDialog(@NonNull Context context/*, ArrayList<String> taskAssign*/, String taskId, String type) {
 		super(context);
@@ -83,24 +90,29 @@ public class AssignTaskDialog extends Dialog {
 		listView = findViewById(R.id.assign_people_listview);
 		noPeople = findViewById(R.id.no_people);
 		progressBar = findViewById(R.id.progress_bar);
-		MaterialButton assign = findViewById(R.id.assign_btn);
+		assign = findViewById(R.id.assign_btn);
 		MaterialButton cancel = findViewById(R.id.cancel_btn);
 		SharedPreferences sp = context.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
 		String strOrgId = sp.getString(KEY_ORG_ID, "");
 		strSession = sp.getString(KEY_SESSION_ID, "");
+		planId = sp.getString(KEY_ORG_PLAN_TYPE, "");
 		String strUserId = sp.getString(KEY_USER_ID, "");
 		String strUserName = sp.getString(KEY_USER_NAME, "");
 		fetchPeople(strOrgId, strSession, strUserId);
 		
 		assign.setOnClickListener(v -> {
 			SharedPreferences preferences = context.getSharedPreferences(PEOPLE_PREFS, Context.MODE_PRIVATE);
-			String peopleArray = preferences.getString(KEY_PEOPLE_ARRAY, "NA");
-			if (type.equals("task")) {
-				AssignTask assignTask = new AssignTask(context);
-				assignTask.execute(strSession, taskId, peopleArray);
-			} else if (type.equals("renewal")) {
-				AssignRenewal assignRenewal = new AssignRenewal(context);
-				assignRenewal.execute(strSession, taskId, peopleArray, strUserId, strUserName);
+			String peopleArray = preferences.getString(KEY_PEOPLE_ARRAY, "");
+			if (peopleArray != null && !peopleArray.isEmpty()) {
+				if (type.equals("task")) {
+					AssignTask assignTask = new AssignTask(context);
+					assignTask.execute(strSession, taskId, peopleArray);
+				} else if (type.equals("renewal")) {
+					AssignRenewal assignRenewal = new AssignRenewal(context);
+					assignRenewal.execute(strSession, taskId, peopleArray, strUserId, strUserName);
+				}
+			} else {
+				Toast.makeText(context, "Nothing Selected", Toast.LENGTH_SHORT).show();
 			}
 		});
 		
@@ -136,6 +148,21 @@ public class AssignTaskDialog extends Dialog {
 							context.startActivity(intent);
 						} else if (result.contains("{\"allMembers\":null}")) {
 							noPeople.setVisibility(View.VISIBLE);
+							assign.setText("Add People");
+							assign.setOnClickListener(v -> {
+								dismiss();
+								if (planId.equals("3")) {
+									new AlertDialog.Builder(context)
+											.setMessage("Please upgrade your plan to access more.")
+											.setPositiveButton("Upgrade", (dialog, which) -> context.startActivity(new Intent(context, PlansActivity.class)))
+											.setNegativeButton("Cancel", null)
+											.show();
+								} else {
+									AddMembersDialog dialog = new AddMembersDialog(context);
+									Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+									dialog.show();
+								}
+							});
 						} else {
 							Log.e("res", result);
 							JSONObject jsonObject = new JSONObject(result);
@@ -145,6 +172,7 @@ public class AssignTaskDialog extends Dialog {
 								PeopleData data = new PeopleData();
 								data.setUsers_details_id(jObject.getString("users_details_id"));
 								data.setName(jObject.getString("users_name"));
+								data.setPassword(jObject.getString("users_password"));
 								peopleArray.add(data);
 							}
 						}
