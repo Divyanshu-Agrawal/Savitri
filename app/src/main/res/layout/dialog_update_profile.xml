@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="@dimen/_10sdp"
+    android:layout_marginEnd="@dimen/_10sdp"
+    android:orientation="vertical"
+    android:id="@+id/layout"
+    android:background="@drawable/dialog_background">
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress_bar"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_30sdp"
+        android:text="Update Profile"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/title_text"
+        android:id="@+id/title"
+        android:gravity="center"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/edit_icon"
+        android:tint="@color/colorPrimary"
+        android:layout_alignBottom="@id/profile_image"
+        android:layout_alignEnd="@id/profile_image"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
+        android:layout_below="@id/title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:id="@+id/profile_image"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_below="@id/profile_image"
+        android:text="User Contact Number"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:id="@+id/num_title"/>
+
+    <EditText
+        android:id="@+id/update_phone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_30sdp"
+        android:background="@drawable/custom_textbox"
+        android:paddingStart="10dp"
+        android:layout_below="@id/num_title"
+        android:layout_gravity="center_horizontal"
+        android:textColorHint="@color/hintcolor"
+        android:textColor="@color/colorPrimaryDark"
+        android:inputType="phone"
+        android:paddingEnd="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_below="@id/update_phone"
+        android:text="User Email"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:id="@+id/email_title"/>
+
+    <EditText
+        android:id="@+id/update_email"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_30sdp"
+
+        android:background="@drawable/custom_textbox"
+        android:paddingStart="10dp"
+        android:layout_below="@id/email_title"
+        android:layout_gravity="center_horizontal"
+        android:textColorHint="@color/hintcolor"
+        android:textColor="@color/colorPrimaryDark"
+        android:inputType="textEmailAddress"
+        android:paddingEnd="10dp"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/id"
+        android:layout_below="@id/update_email"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancel_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/_30sdp"
+            app:backgroundTint="@android:color/transparent"
+            android:text="Cancel"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/update_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            app:backgroundTint="@android:color/transparent"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:text="Update"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:textColor="@color/colorPrimaryDark" />
+
+    </LinearLayout>
+
+</RelativeLayout>

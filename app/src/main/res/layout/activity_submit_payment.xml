@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".activities.SubmitPayment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/toolbarTheme"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:title="Submit Payment Details"
+        app:titleTextColor="@color/button_text" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusableInTouchMode="true">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/trans_id"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Transaction Number"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:inputType="textCapCharacters"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:background="@drawable/custom_textbox"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/trans_date"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Transaction Date"
+                android:focusable="false"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:inputType="date"
+                android:layout_below="@id/trans_id"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:background="@drawable/custom_textbox"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_180sdp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/message"
+                android:gravity="start"
+                android:textColorHint="@color/hintcolor"
+                android:textColor="@color/colorPrimaryDark"
+                android:hint="Message"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:inputType="textCapSentences|textMultiLine"
+                android:padding="10dp"
+                android:layout_below="@id/trans_date"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:background="@drawable/custom_textbox"/>
+
+            <ImageView
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="@dimen/_100sdp"
+                android:layout_below="@id/message"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/add_icon"
+                android:id="@+id/add_certificate"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="@dimen/_200sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@id/add_certificate"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:text="Send Details"
+                app:strokeColor="@color/colorPrimaryDark"
+                app:strokeWidth="1dp"
+                android:id="@+id/send_details_btn"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

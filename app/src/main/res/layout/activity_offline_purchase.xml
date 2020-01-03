@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.OfflinePurchase">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/toolbarTheme"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:title="Buy Plan"
+        app:titleTextColor="@color/button_text" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:id="@+id/payment_details"
+        android:layout_below="@id/toolbar"
+        android:layout_above="@id/submit_purchase"
+        android:textSize="18sp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        app:cornerRadius="5dp"
+        android:id="@+id/submit_purchase"
+        android:text="Send Payment Details"
+        android:textAllCaps="false"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:theme="@style/Widget.AppCompat.Button.Colored"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="5dp"
+        android:textColor="@color/button_text"
+        app:rippleColor="#80D44D4D" />
+
+</RelativeLayout>
