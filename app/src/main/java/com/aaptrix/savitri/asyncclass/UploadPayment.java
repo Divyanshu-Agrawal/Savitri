@@ -167,23 +167,25 @@ public class UploadPayment extends AsyncTask<String, String, String> {
             try {
                 Log.e("res", result);
                 JSONObject jsonObject = new JSONObject(result);
-                if (jsonObject.getBoolean("success")) {
-                    SharedPreferences preferences = context.getSharedPreferences(PAYMENT_PREFS, Context.MODE_PRIVATE);
-                    preferences.edit().clear().putBoolean(KEY_SERVER_STATUS, false).apply();
-                    JSONArray jsonArray = jsonObject.getJSONArray("result");
-                    JSONObject jObject = jsonArray.getJSONObject(0);
-                    SharedPreferences sp = context.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString(KEY_PLAN_EXPIRE_DATE, jObject.getString("org_plan_expire_date"));
-                    editor.putInt(KEY_COMPLIANCE_COUNT, Integer.parseInt(jObject.getString("plan_compliance_limit")));
-                    editor.putInt(KEY_MEMBER_COUNT, Integer.parseInt(jObject.getString("plan_user_assign_limit")));
-                    editor.putInt(KEY_DATA_DOWNLOAD, Integer.parseInt(jObject.getString("plan_data_download")));
-                    editor.putInt(KEY_STORAGE_CYCLE, Integer.parseInt(jObject.getString("plan_data_storage_cycle")));
-                    editor.putString(KEY_ORG_PLAN_TYPE, planId);
-                    editor.putString(KEY_PLAN_NAME, planName);
-                    editor.apply();
-                } else {
-                    savePreference();
+                if (status.equals("TXN_SUCCESS")) {
+                    if (jsonObject.getBoolean("success")) {
+                        SharedPreferences preferences = context.getSharedPreferences(PAYMENT_PREFS, Context.MODE_PRIVATE);
+                        preferences.edit().clear().putBoolean(KEY_SERVER_STATUS, false).apply();
+                        JSONArray jsonArray = jsonObject.getJSONArray("result");
+                        JSONObject jObject = jsonArray.getJSONObject(0);
+                        SharedPreferences sp = context.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString(KEY_PLAN_EXPIRE_DATE, jObject.getString("org_plan_expire_date"));
+                        editor.putInt(KEY_COMPLIANCE_COUNT, Integer.parseInt(jObject.getString("plan_compliance_limit")));
+                        editor.putInt(KEY_MEMBER_COUNT, Integer.parseInt(jObject.getString("plan_user_assign_limit")));
+                        editor.putInt(KEY_DATA_DOWNLOAD, Integer.parseInt(jObject.getString("plan_data_download")));
+                        editor.putInt(KEY_STORAGE_CYCLE, Integer.parseInt(jObject.getString("plan_data_storage_cycle")));
+                        editor.putString(KEY_ORG_PLAN_TYPE, planId);
+                        editor.putString(KEY_PLAN_NAME, planName);
+                        editor.apply();
+                    } else {
+                        savePreference();
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -42,7 +42,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
-import static com.aaptrix.savitri.session.URLs.DATA_URL;
+import static com.aaptrix.savitri.activities.SplashScreen.DATA_URL;
 
 public class PeopleAdapter extends ArrayAdapter<PeopleData> {
 	

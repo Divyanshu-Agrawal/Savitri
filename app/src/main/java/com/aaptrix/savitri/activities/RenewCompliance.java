@@ -40,6 +40,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,14 +61,15 @@ import java.util.Objects;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 
 public class RenewCompliance extends AppCompatActivity {
 	
 	EditText validFrom, validTo;
-	String setValidFrom = "", setValidUpto = "", strOrgId, strUserId, strSessionId;
+	String setValidFrom = "", setValidUpto = "", strOrgId, strUserId, strSessionId, strUserRole;
 	Toolbar toolbar;
-	ProgressBar progressBar;
+	RelativeLayout progressBar;
 	MaterialButton renewCompliance;
 	Button uploadCertificate;
 	TextView certCount;
@@ -79,6 +81,7 @@ public class RenewCompliance extends AppCompatActivity {
 	String strName, strNotes, strIssueAuth, strValidFrom, strValidTo, strRefno, strId;
 	SharedPreferences sp;
 	
+	@SuppressLint("SetTextI18n")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,9 +101,12 @@ public class RenewCompliance extends AppCompatActivity {
 		renewCompliance = findViewById(R.id.add_compliance_btn);
 		uploadCertificate = findViewById(R.id.compliance_certificate);
 		certCount = findViewById(R.id.certificate_count);
-		strOrgId = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE).getString(KEY_ORG_ID, "");
-		strUserId = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE).getString(KEY_USER_ID, "");
-		strSessionId = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE).getString(KEY_SESSION_ID, "");
+
+		SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+		strOrgId = sp.getString(KEY_ORG_ID, "");
+		strUserId = sp.getString(KEY_USER_ID, "");
+		strSessionId = sp.getString(KEY_SESSION_ID, "");
+		strUserRole = sp.getString(KEY_USER_ROLE, "");
 		
 		strName = getIntent().getStringExtra("name");
 		strNotes = getIntent().getStringExtra("notes");
@@ -109,6 +115,9 @@ public class RenewCompliance extends AppCompatActivity {
 		strValidFrom = getIntent().getStringExtra("validFrom");
 		strValidTo = getIntent().getStringExtra("validTo");
 		strRefno = getIntent().getStringExtra("refNo");
+
+		progressBar.setOnTouchListener((v, event) -> false);
+		progressBar.setOnClickListener(v -> {});
 		
 		name.setText(strName);
 		notes.setText(strNotes);
@@ -118,6 +127,12 @@ public class RenewCompliance extends AppCompatActivity {
 		date = new FormatDate(strValidTo, "yyyy-MM-dd", "dd-MM-yyyy");
 		validTo.setText(date.format());
 		refNo.setText(strRefno);
+
+		if (strUserRole.equals("Admin")) {
+			renewCompliance.setText("Renew Compliance");
+		} else {
+			renewCompliance.setText("Mark For Review");
+		}
 		
 		uploadCertificate.setOnClickListener(v -> {
 			if (PermissionChecker.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -147,16 +162,6 @@ public class RenewCompliance extends AppCompatActivity {
 			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validFromDate, fromCalendar
 					.get(Calendar.YEAR), fromCalendar.get(Calendar.MONTH),
 					fromCalendar.get(Calendar.DAY_OF_MONTH));
-			try {
-				if (setValidUpto.isEmpty())
-					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidTo).getTime() + 1000);
-				else {
-					datePickerDialog.getDatePicker().setMaxDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(setValidUpto).getTime());
-					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidTo).getTime() + 1000);
-				}
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
 			datePickerDialog.show();
 		});
 		
@@ -176,14 +181,6 @@ public class RenewCompliance extends AppCompatActivity {
 			DatePickerDialog datePickerDialog = new DatePickerDialog(this, validUptoDate, uptoCalender
 					.get(Calendar.YEAR), uptoCalender.get(Calendar.MONTH),
 					uptoCalender.get(Calendar.DAY_OF_MONTH));
-			try {
-				if (!setValidFrom.isEmpty())
-					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(setValidFrom).getTime() + 1000);
-				else
-					datePickerDialog.getDatePicker().setMinDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(strValidTo).getTime() + 1000);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
 			datePickerDialog.show();
 		});
 		
@@ -197,9 +194,15 @@ public class RenewCompliance extends AppCompatActivity {
 			} else if (filepath.size() == 0) {
 				Toast.makeText(this, "Please Upload Certificate", Toast.LENGTH_SHORT).show();
 			} else {
+				renewCompliance.setEnabled(false);
 				progressBar.setVisibility(View.VISIBLE);
-				Renew renew = new Renew(this);
-				renew.execute(strOrgId, strSessionId, setValidFrom, setValidUpto, strId);
+				if (strUserRole.equals("Admin")) {
+					Renew renew = new Renew(this);
+					renew.execute(strOrgId, strSessionId, setValidFrom, setValidUpto, strId, URLs.RENEW_COMPLIANCE);
+				} else {
+					Renew renew = new Renew(this);
+					renew.execute(strOrgId, strSessionId, setValidFrom, setValidUpto, strId, URLs.COMPLIANCE_REVIEW);
+				}
 			}
 		});
 	}
@@ -216,18 +219,29 @@ public class RenewCompliance extends AppCompatActivity {
 							try {
 								int length = 0;
 								for (int j = 0; j < clipData.getItemCount(); j++) {
-									length = length + (int) FileUtil.from(this, clipData.getItemAt(j).getUri()).length();
+									String fileExt = FileUtil.from(this, clipData.getItemAt(j).getUri()).toString().substring(FileUtil.from(this, clipData.getItemAt(j).getUri()).toString().lastIndexOf(".") + 1);
+									if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+										length = (int) new Compressor(this)
+												.setMaxWidth(1280)
+												.setMaxHeight(720)
+												.setQuality(25)
+												.setCompressFormat(Bitmap.CompressFormat.JPEG)
+												.compressToFile(FileUtil.from(this, clipData.getItemAt(j).getUri())).length();
+									} else {
+										length = (int) FileUtil.from(this, data.getData()).length();
+									}
+									Log.e("length", "" + length);
 								}
 								for (int j = 0; j < filepath.size(); j++) {
 									length = length + (int) filepath.get(j).length();
 								}
-								String fileExt = clipData.getItemAt(i).getUri().toString().substring(clipData.getItemAt(i).getUri().toString().lastIndexOf(".") + 1);
+								String fileExt = FileUtil.from(this, clipData.getItemAt(i).getUri()).toString().substring(FileUtil.from(this, clipData.getItemAt(i).getUri()).toString().lastIndexOf(".") + 1);
 								if (length <= 1024000) {
 									if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
 										filepath.add(new Compressor(this)
 												.setMaxWidth(1280)
 												.setMaxHeight(720)
-												.setQuality(75)
+												.setQuality(25)
 												.setCompressFormat(Bitmap.CompressFormat.JPEG)
 												.compressToFile(FileUtil.from(this, clipData.getItemAt(i).getUri())));
 									} else {
@@ -248,22 +262,35 @@ public class RenewCompliance extends AppCompatActivity {
 				} else {
 					try {
 						if (filepath.size() <= 5) {
-							int length = (int) FileUtil.from(this, data.getData()).length();
+							int length;
+							String fileExt = FileUtil.from(this, data.getData()).toString().substring(FileUtil.from(this, data.getData()).toString().lastIndexOf(".") + 1);
+							if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+								length = (int) new Compressor(this)
+										.setMaxWidth(1280)
+										.setMaxHeight(720)
+										.setQuality(25)
+										.setCompressFormat(Bitmap.CompressFormat.JPEG)
+										.compressToFile(FileUtil.from(this, data.getData())).length();
+								Log.e("length", ""+length);
+							} else {
+								length = (int) FileUtil.from(this, data.getData()).length();
+							}
 							for (int j = 0; j < filepath.size(); j++) {
 								length = length + (int) filepath.get(j).length();
 							}
-							String fileExt = data.getData().toString().substring(data.getData().toString().lastIndexOf(".") + 1);
 							if (length <= 1024000) {
 								if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
 									filepath.add(new Compressor(this)
 											.setMaxWidth(1280)
 											.setMaxHeight(720)
-											.setQuality(75)
+											.setQuality(25)
 											.setCompressFormat(Bitmap.CompressFormat.JPEG)
 											.compressToFile(FileUtil.from(this, data.getData())));
 									certCount.setText(filepath.size() + " Files Selected");
 								} else {
-									filepath.add(FileUtil.from(this, data.getData()));
+									if((int)FileUtil.from(this, data.getData()).length() < 1024000)
+
+										filepath.add(FileUtil.from(this, data.getData()));
 									certCount.setText(filepath.size() + " Files Selected");
 								}
 							} else {
@@ -288,15 +315,12 @@ public class RenewCompliance extends AppCompatActivity {
 	
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
-										   @NonNull String permissions[], @NonNull int[] grantResults) {
-		switch (requestCode) {
-			case 1: {
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-				}
-				
+										   @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == 1) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -340,6 +364,7 @@ public class RenewCompliance extends AppCompatActivity {
 			String validFrom = params[2];
 			String validTo = params[3];
 			String compliance_id = params[4];
+			String url = params[5];
 			
 			
 			try {
@@ -347,7 +372,7 @@ public class RenewCompliance extends AppCompatActivity {
 				for (int i = 0; i < filepath.size(); i++) {
 					try {
 						HttpClient httpclient = new DefaultHttpClient();
-						HttpPost httppost = new HttpPost(URLs.RENEW_COMPLIANCE);
+						HttpPost httppost = new HttpPost(url);
 						MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
 						entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 						FileBody image = new FileBody(filepath.get(i));
@@ -368,7 +393,7 @@ public class RenewCompliance extends AppCompatActivity {
 				}
 				try {
 					HttpClient httpclient = new DefaultHttpClient();
-					HttpPost httppost = new HttpPost(URLs.RENEW_COMPLIANCE);
+					HttpPost httppost = new HttpPost(url);
 					MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
 					entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 					entityBuilder.addTextBody("compliance_certificates", fileNames.toString());
@@ -377,6 +402,7 @@ public class RenewCompliance extends AppCompatActivity {
 					entityBuilder.addTextBody("compliance_id", compliance_id);
 					entityBuilder.addTextBody("compliance_valid_from", validFrom);
 					entityBuilder.addTextBody("compliance_valid_upto", validTo);
+					entityBuilder.addTextBody("users_details_id", strUserId);
 					HttpEntity entity = entityBuilder.build();
 					httppost.setEntity(entity);
 					HttpResponse response = httpclient.execute(httppost);
@@ -400,8 +426,14 @@ public class RenewCompliance extends AppCompatActivity {
 				try {
 					JSONObject jsonObject = new JSONObject(result);
 					if (jsonObject.getBoolean("success")) {
-						Toast.makeText(context, "Renewed Successfully", Toast.LENGTH_SHORT).show();
-						startActivity(new Intent(context, RenewalActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+						if (strUserRole.equals("Admin")) {
+							Toast.makeText(context, "Renewed Successfully", Toast.LENGTH_SHORT).show();
+//							startActivity(new Intent(context, RenewalActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+						} else {
+							Toast.makeText(context, "Marked for review", Toast.LENGTH_SHORT).show();
+//							startActivity(new Intent(context, MemberDashboard.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+						}
+						finish();
 					} else if (result.contains("\"success\":false,\"msg\":\"Session Expire\"")){
 						progressBar.setVisibility(View.GONE);
 						Toast.makeText(context, "Your Session is expired please login again", Toast.LENGTH_SHORT).show();

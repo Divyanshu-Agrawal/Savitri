@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aaptrix.savitri.BuildConfig;
 import com.aaptrix.savitri.asyncclass.LoginUser;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.material.button.MaterialButton;
@@ -40,6 +42,7 @@ import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.session.URLs;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -48,6 +51,11 @@ import cz.msebera.android.httpclient.entity.mime.HttpMultipartMode;
 import cz.msebera.android.httpclient.entity.mime.MultipartEntityBuilder;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.util.EntityUtils;
+
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PASSWORD;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PHONE;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_TOKEN;
+import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 
 public class AppLogin extends AppCompatActivity {
 
@@ -61,6 +69,7 @@ public class AppLogin extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String mVerificationId;
     String token, type;
+    TextView version;
     Context context = this;
 
     @Override
@@ -76,6 +85,9 @@ public class AppLogin extends AppCompatActivity {
         loginLayout = findViewById(R.id.login_layout);
         otpLayout = findViewById(R.id.otp_layout);
         registerLayout = findViewById(R.id.register_layout);
+        version = findViewById(R.id.version);
+
+        version.setText("Version " + BuildConfig.VERSION_NAME);
 
         userPhone = findViewById(R.id.user_phone);
         userPassword = findViewById(R.id.user_password);
@@ -220,7 +232,13 @@ public class AppLogin extends AppCompatActivity {
                 userPassword.requestFocus();
             } else {
                 progressBar.setVisibility(View.VISIBLE);
-                LoginUser loginUser = new LoginUser(this, progressBar);
+                SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(KEY_PHONE, phone);
+                editor.putString(KEY_PASSWORD, userPassword.getText().toString());
+                editor.putString(KEY_TOKEN, token);
+                editor.apply();
+                LoginUser loginUser = new LoginUser(this, progressBar, "login");
                 loginUser.execute(phone, userPassword.getText().toString(), token);
             }
         });
@@ -308,6 +326,11 @@ public class AppLogin extends AppCompatActivity {
                                 Toast.makeText(context, "Password must have 8 characters", Toast.LENGTH_SHORT).show();
                             } else {
                                 if (type.equals("forgot")) {
+                                    SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sp.edit();
+                                    editor.putString(KEY_PHONE, registerPhoneNumber);
+                                    editor.putString(KEY_PASSWORD, registerUserPassword);
+                                    editor.apply();
                                     ForgotPassword forgotPassword = new ForgotPassword(this);
                                     forgotPassword.execute(registerPhoneNumber, registerUserPassword);
                                 } else {
@@ -334,8 +357,33 @@ public class AppLogin extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
+        finishAffinity();
         System.exit(0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -406,7 +454,7 @@ public class AppLogin extends AppCompatActivity {
                                     try {
                                         JSONObject jObject = new JSONObject(res);
                                         if (jObject.getBoolean("success")) {
-                                            LoginUser loginUser = new LoginUser(ctx, progressBar);
+                                            LoginUser loginUser = new LoginUser(ctx, progressBar, "login");
                                             loginUser.execute(username, password, token);
                                         }
                                     } catch (JSONException e) {

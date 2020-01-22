@@ -32,11 +32,15 @@ public class TnCActivity extends AppCompatActivity {
 		type = getIntent().getStringExtra("type");
 		url = getIntent().getStringExtra("url");
 		setSupportActionBar(toolbar);
+
 		if (type.equals("tnc")) {
 			getSupportActionBar().setTitle("Terms and Condition");
-		} else {
+		} else if (type.equals("privacy")) {
 			getSupportActionBar().setTitle("Privacy Policy");
+		} else {
+			getSupportActionBar().setTitle("Refund Policy");
 		}
+
 		getSupportActionBar().setDisplayShowHomeEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		progressBar.setVisibility(View.VISIBLE);

@@ -5,31 +5,30 @@ import java.io.Serializable;
 public class ComplianceData implements Serializable {
 
 	private String id, name, refNo, issueAuth, otherAuth,
-			validfrom, validTo, certificate, notes, addedDate, assignedTo,
-			assignedBy, assignedByName, renewCount;
-	
+			validfrom, validTo, certificate, notes, addedDate, assignedTo, renewCount, markReview, status;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getMarkReview() {
+		return markReview;
+	}
+
+	public void setMarkReview(String markReview) {
+		this.markReview = markReview;
+	}
+
 	public String getRenewCount() {
 		return renewCount;
 	}
 	
 	public void setRenewCount(String renewCount) {
 		this.renewCount = renewCount;
-	}
-	
-	public String getAssignedBy() {
-		return assignedBy;
-	}
-	
-	public void setAssignedBy(String assignedBy) {
-		this.assignedBy = assignedBy;
-	}
-	
-	public String getAssignedByName() {
-		return assignedByName;
-	}
-	
-	public void setAssignedByName(String assignedByName) {
-		this.assignedByName = assignedByName;
 	}
 	
 	public String getAssignedTo() {

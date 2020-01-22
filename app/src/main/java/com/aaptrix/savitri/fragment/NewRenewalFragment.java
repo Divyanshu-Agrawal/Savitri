@@ -61,6 +61,8 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 import static android.content.Context.CONNECTIVITY_SERVICE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 
 public class NewRenewalFragment extends Fragment {
@@ -70,7 +72,7 @@ public class NewRenewalFragment extends Fragment {
     private TextView noStatus;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private String strOrgId, strSessionId;
+    private String strOrgId, strSessionId, strUserId, strUserType;
     private Context context;
     private FrameLayout layout;
 
@@ -97,6 +99,8 @@ public class NewRenewalFragment extends Fragment {
         SharedPreferences sp = context.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
         strOrgId = sp.getString(KEY_ORG_ID, "");
         strSessionId = sp.getString(KEY_SESSION_ID, "");
+        strUserId = sp.getString(KEY_USER_ID, "");
+        strUserType = sp.getString(KEY_USER_ROLE, "");
         progressBar.setVisibility(View.VISIBLE);
         setRenewalStatus();
 
@@ -138,9 +142,7 @@ public class NewRenewalFragment extends Fragment {
                     data.setRefNo(jObject.getString("compliance_reference_no"));
                     data.setValidfrom(jObject.getString("compliance_valid_from"));
                     data.setValidTo(jObject.getString("compliance_valid_upto"));
-                    data.setAssignedBy(jObject.getString("users_details_id"));
-                    data.setAssignedByName(jObject.getString("users_name"));
-                    data.setAssignedTo(jObject.toString());
+                    data.setAssignedTo(jObject.getString("assign_users_name"));
                     renewalArray.add(data);
                 }
             } catch (Exception e) {
@@ -166,7 +168,8 @@ public class NewRenewalFragment extends Fragment {
                 entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
                 entityBuilder.addTextBody("org_details_id", strOrgId);
                 entityBuilder.addTextBody("app_session_id", strSessionId);
-                Log.e("session", strSessionId);
+                entityBuilder.addTextBody("users_details_id", strUserId);
+                entityBuilder.addTextBody("users_type", strUserType);
                 HttpEntity entity = entityBuilder.build();
                 httppost.setEntity(entity);
                 HttpResponse response = httpclient.execute(httppost);
@@ -203,9 +206,7 @@ public class NewRenewalFragment extends Fragment {
                                 data.setRefNo(jObject.getString("compliance_reference_no"));
                                 data.setValidfrom(jObject.getString("compliance_valid_from"));
                                 data.setValidTo(jObject.getString("compliance_valid_upto"));
-                                data.setAssignedBy(jObject.getString("users_details_id"));
-                                data.setAssignedByName(jObject.getString("users_name"));
-                                data.setAssignedTo(jObject.toString());
+                                data.setAssignedTo(jObject.getString("assign_users_name"));
                                 renewalArray.add(data);
                             }
                         }

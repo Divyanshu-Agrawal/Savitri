@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import static com.aaptrix.savitri.activities.SplashScreen.DATA_URL;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
-import static com.aaptrix.savitri.session.URLs.DATA_URL;
 
 public class FullscrAdapter extends PagerAdapter {
 

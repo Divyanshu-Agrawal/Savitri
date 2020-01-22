@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,11 +13,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aaptrix.savitri.activities.PeopleActivity;
 import com.aaptrix.savitri.activities.PlansActivity;
 import com.google.android.material.button.MaterialButton;
 
@@ -35,10 +36,13 @@ import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.activities.AppLogin;
 import com.aaptrix.savitri.activities.RenewalActivity;
 import com.aaptrix.savitri.activities.TasksActivity;
-import com.aaptrix.savitri.adapter.AssignTaskPeopleAdapter;
 import com.aaptrix.savitri.databeans.PeopleData;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
@@ -64,18 +68,16 @@ public class AssignTaskDialog extends Dialog {
 	
 	private Context context;
 	private ProgressBar progressBar;
-	private ListView listView;
-	private ArrayList<PeopleData> peopleArray = new ArrayList<>();
+	private RelativeLayout layout;
+	private ArrayList<PeopleData> peopleArray = new ArrayList<>(), array = new ArrayList<>();
 	private TextView noPeople;
-//	private ArrayList<String> taskAssign;
 	private String strSession;
 	private String taskId, type, planId;
 	private MaterialButton assign;
 	
-	public AssignTaskDialog(@NonNull Context context/*, ArrayList<String> taskAssign*/, String taskId, String type) {
+	public AssignTaskDialog(@NonNull Context context, String taskId, String type) {
 		super(context);
 		this.context = context;
-//		this.taskAssign = taskAssign;
 		this.taskId = taskId;
 		this.type = type;
 	}
@@ -87,7 +89,7 @@ public class AssignTaskDialog extends Dialog {
 		setContentView(R.layout.dialog_assign_people);
 		Objects.requireNonNull(this.getWindow()).setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 		
-		listView = findViewById(R.id.assign_people_listview);
+		layout = findViewById(R.id.assign_people_layout);
 		noPeople = findViewById(R.id.no_people);
 		progressBar = findViewById(R.id.progress_bar);
 		assign = findViewById(R.id.assign_btn);
@@ -103,13 +105,15 @@ public class AssignTaskDialog extends Dialog {
 		assign.setOnClickListener(v -> {
 			SharedPreferences preferences = context.getSharedPreferences(PEOPLE_PREFS, Context.MODE_PRIVATE);
 			String peopleArray = preferences.getString(KEY_PEOPLE_ARRAY, "");
+			Log.e("people array", peopleArray);
 			if (peopleArray != null && !peopleArray.isEmpty()) {
+				Log.e("people array", peopleArray);
 				if (type.equals("task")) {
 					AssignTask assignTask = new AssignTask(context);
-					assignTask.execute(strSession, taskId, peopleArray);
+					assignTask.execute(strSession, taskId, peopleArray, strOrgId);
 				} else if (type.equals("renewal")) {
 					AssignRenewal assignRenewal = new AssignRenewal(context);
-					assignRenewal.execute(strSession, taskId, peopleArray, strUserId, strUserName);
+					assignRenewal.execute(strSession, taskId, peopleArray, strUserId, strUserName, strOrgId);
 				}
 			} else {
 				Toast.makeText(context, "Nothing Selected", Toast.LENGTH_SHORT).show();
@@ -120,6 +124,7 @@ public class AssignTaskDialog extends Dialog {
 		
 	}
 	
+	@SuppressLint("SetTextI18n")
 	private void fetchPeople(String strOrgId, String  strSessionId, String strUserId) {
 		progressBar.setVisibility(View.VISIBLE);
 		new Thread(() -> {
@@ -158,13 +163,10 @@ public class AssignTaskDialog extends Dialog {
 											.setNegativeButton("Cancel", null)
 											.show();
 								} else {
-									AddMembersDialog dialog = new AddMembersDialog(context);
-									Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-									dialog.show();
+									context.startActivity(new Intent(context, PeopleActivity.class));
 								}
 							});
 						} else {
-							Log.e("res", result);
 							JSONObject jsonObject = new JSONObject(result);
 							JSONArray jsonArray = jsonObject.getJSONArray("allMembers");
 							for (int i = 0; i < jsonArray.length(); i++) {
@@ -187,11 +189,47 @@ public class AssignTaskDialog extends Dialog {
 		}).start();
 	}
 	
+	@SuppressLint("SetTextI18n")
 	private void listItems() {
-		AssignTaskPeopleAdapter adapter = new AssignTaskPeopleAdapter(context, R.layout.list_assign_people, peopleArray);
-		listView.setAdapter(adapter);
-		listView.setEnabled(true);
-		adapter.notifyDataSetChanged();
+		RadioGroup group = new RadioGroup(context);
+
+		for (int i = 0; i < peopleArray.size(); i++) {
+			RadioButton button = new RadioButton(context);
+			if (peopleArray.get(i).getPassword() != null && !peopleArray.get(i).getPassword().equals("null")) {
+				button.setText(peopleArray.get(i).getName());
+			} else {
+				button.setText(peopleArray.get(i).getName() + "        (Invited)");
+			}
+			button.setChecked(false);
+			button.setTextSize(16);
+			button.setId(Integer.valueOf(peopleArray.get(i).getUsers_details_id()));
+			button.setPadding(15, 15, 15, 15);
+			group.addView(button);
+		}
+
+		layout.addView(group);
+
+		group.setOnCheckedChangeListener((group1, checkedId) -> {
+			array.clear();
+			for (int i = 0; i < peopleArray.size(); i++) {
+				int id = Integer.valueOf(peopleArray.get(i).getUsers_details_id());
+				if (id == checkedId) {
+					array.add(peopleArray.get(i));
+					saveDataInSP(array);
+					break;
+				}
+			}
+		});
+	}
+
+	private void saveDataInSP(ArrayList<PeopleData> peopleArray) {
+		Gson gson = new GsonBuilder().create();
+		JsonArray array = gson.toJsonTree(peopleArray).getAsJsonArray();
+		SharedPreferences sp = context.getSharedPreferences(PEOPLE_PREFS, 0);
+		SharedPreferences.Editor se = sp.edit();
+		se.clear();
+		se.putString(KEY_PEOPLE_ARRAY, array.toString());
+		se.apply();
 	}
 	
 	@SuppressLint("StaticFieldLeak")
@@ -218,6 +256,7 @@ public class AssignTaskDialog extends Dialog {
 			String sessionId = params[0];
 			String id = params[1];
 			String assignPeople = params[2];
+			String orgId = params[3];
 			
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
@@ -227,6 +266,7 @@ public class AssignTaskDialog extends Dialog {
 				entityBuilder.addTextBody("tasks_details_id", id);
 				entityBuilder.addTextBody("assign_users", assignPeople);
 				entityBuilder.addTextBody("app_session_id", sessionId);
+				entityBuilder.addTextBody("org_details_id", orgId);
 				HttpEntity entity = entityBuilder.build();
 				httppost.setEntity(entity);
 				HttpResponse response = httpclient.execute(httppost);
@@ -295,11 +335,7 @@ public class AssignTaskDialog extends Dialog {
 			String assignPeople = params[2];
 			String userId = params[3];
 			String name = params[4];
-			
-			Log.e("assign", assignPeople);
-			Log.e("session id", sessionId);
-			Log.e("task id", id);
-			Log.e("userid", userId);
+			String orgId = params[5];
 			
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
@@ -311,6 +347,7 @@ public class AssignTaskDialog extends Dialog {
 				entityBuilder.addTextBody("app_session_id", sessionId);
 				entityBuilder.addTextBody("users_details_id", userId);
 				entityBuilder.addTextBody("users_name", name);
+				entityBuilder.addTextBody("org_details_id", orgId);
 				HttpEntity entity = entityBuilder.build();
 				httppost.setEntity(entity);
 				HttpResponse response = httpclient.execute(httppost);

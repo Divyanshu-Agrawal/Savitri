@@ -177,43 +177,43 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/compliance_notes"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:text="Assigned By"
-                android:paddingBottom="5dp"
-                android:paddingEnd="10dp"
-                android:paddingStart="10dp"
-                android:visibility="gone"
-                android:id="@+id/assign_by_title" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/assign_by_title"
-                android:id="@+id/task_assigned_by"
-                android:textSize="@dimen/title_text"
-                android:textColor="@android:color/black"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:visibility="gone"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/task_assigned_by"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:text="Assigned To"
                 android:paddingBottom="5dp"
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
                 android:id="@+id/assign_title" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/assign_title"
+                android:id="@+id/assigned_to"
+                android:textSize="@dimen/title_text"
+                android:textColor="@android:color/black"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:visibility="visible"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Attached Certificates"
+                android:paddingBottom="5dp"
+                android:layout_below="@id/assigned_to"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:id="@+id/cert_title" />
+
             <ListView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_200sdp"
-                android:layout_below="@id/assign_title"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:dividerHeight="0dp"
                 android:divider="@null"
-                android:scrollbars="none"
-                android:id="@+id/assigned_to_listview"/>
+                android:layout_below="@id/cert_title"
+                android:paddingBottom="@dimen/_10sdp"
+                android:id="@+id/certificate_listview"/>
 
         </RelativeLayout>
 

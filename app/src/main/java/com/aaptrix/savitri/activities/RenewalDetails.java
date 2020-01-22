@@ -8,9 +8,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.aaptrix.savitri.adapter.CertificateAdapter;
 import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
@@ -33,14 +37,16 @@ import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 public class RenewalDetails extends AppCompatActivity {
 	
 	Toolbar toolbar;
-	String strName, strNotes, strIssueAuth, strValidFrom, strValidTo, strRefno, strId;
-	String strAssignedBy, strUserId, strAssignByName, strUserrole, strAssignedTo;
+	String strName, strNotes, strIssueAuth, strValidFrom, strValidTo, strRefno, strId, strCertificate;
+	String strUserId, strUserrole, strAssignedTo;
 	SharedPreferences sp;
 	MaterialButton renewCompliance, assignRenew;
 	TextView name, notes, issueAuth, validFrom, validTo, refNo;
-	TextView assignedBy, assignByTitle, assignToTitle;
-	ListView assignList;
-	ArrayList<String> array = new ArrayList<>();
+	TextView assignToTitle;
+	TextView assignTo;
+	ListView certificateList;
+	CertificateAdapter adaptor;
+	ArrayList<String> certUrl = new ArrayList<>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +64,8 @@ public class RenewalDetails extends AppCompatActivity {
 		strValidFrom = getIntent().getStringExtra("validFrom");
 		strValidTo = getIntent().getStringExtra("validTo");
 		strRefno = getIntent().getStringExtra("refNo");
-		strAssignedBy = getIntent().getStringExtra("assignedBy");
 		strAssignedTo = getIntent().getStringExtra("assignedTo");
-		strAssignByName = getIntent().getStringExtra("assignName");
+		strCertificate = getIntent().getStringExtra("certificate");
 		
 		name = findViewById(R.id.compliance_name);
 		notes = findViewById(R.id.compliance_notes);
@@ -70,9 +75,8 @@ public class RenewalDetails extends AppCompatActivity {
 		refNo = findViewById(R.id.compliance_ref_no);
 		renewCompliance = findViewById(R.id.renew_btn);
 		assignRenew = findViewById(R.id.assign_renew_btn);
-		assignList = findViewById(R.id.assigned_to_listview);
-		assignedBy = findViewById(R.id.task_assigned_by);
-		assignByTitle = findViewById(R.id.assign_by_title);
+		assignTo = findViewById(R.id.assigned_to);
+		certificateList = findViewById(R.id.certificate_listview);
 		assignToTitle = findViewById(R.id.assign_title);
 		
 		sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
@@ -84,12 +88,22 @@ public class RenewalDetails extends AppCompatActivity {
 		} else {
 			assignRenew.setVisibility(View.GONE);
 		}
-		
-		if (strAssignedBy != null && !strAssignedBy.equals(strUserId)) {
-			assignByTitle.setVisibility(View.VISIBLE);
-			assignedBy.setVisibility(View.VISIBLE);
-			assignedBy.setText(strAssignByName);
+
+		for (String aStrUrl : strCertificate.split(",")) {
+			certUrl.add(aStrUrl.replace("[", "")
+					.replace("]", "")
+					.replace("\"", "")
+					.replace(" ", "")
+					.replace("\\", ""));
 		}
+
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		layoutParams.height = (int) (getResources().getDimension(R.dimen._220sdp)) * certUrl.size();
+		certificateList.setLayoutParams(layoutParams);
+		certificateList.setPadding(0, 0, 0, 50);
+		adaptor = new CertificateAdapter(this, R.layout.list_certificate, certUrl, this);
+		certificateList.setAdapter(adaptor);
+		adaptor.notifyDataSetChanged();
 		
 		name.setText(strName);
 		notes.setText(strNotes);
@@ -100,30 +114,7 @@ public class RenewalDetails extends AppCompatActivity {
 		validTo.setText(date.format());
 		refNo.setText(strRefno);
 		
-		if (strAssignedTo != null) {
-			try {
-				JSONObject jsonObject = new JSONObject(strAssignedTo);
-				for (int i = 0; i < 5; i++) {
-					JSONObject jObject = jsonObject.getJSONObject("assign_users_list" + i);
-					array.add(jObject.getString("users_name"));
-				}
-				AssignedPeopleAdapter adapter = new AssignedPeopleAdapter(this, R.layout.list_assign_people, array);
-				assignList.setAdapter(adapter);
-				assignList.setEnabled(false);
-			} catch (JSONException e) {
-				e.printStackTrace();
-				AssignedPeopleAdapter adapter = new AssignedPeopleAdapter(this, R.layout.list_assign_people, array);
-				assignList.setAdapter(adapter);
-				assignList.setEnabled(false);
-			}
-		} else {
-			assignToTitle.setVisibility(View.GONE);
-			assignList.setVisibility(View.GONE);
-		}
-		if (array.size() == 0) {
-			assignToTitle.setVisibility(View.GONE);
-			assignList.setVisibility(View.GONE);
-		}
+		assignTo.setText(strAssignedTo);
 		
 		renewCompliance.setOnClickListener(v -> {
 			Intent intent = new Intent(this, RenewCompliance.class);

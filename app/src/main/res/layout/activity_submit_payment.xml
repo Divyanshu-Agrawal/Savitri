@@ -37,7 +37,7 @@
                 android:id="@+id/trans_id"
                 android:textColorHint="@color/hintcolor"
                 android:textColor="@color/colorPrimaryDark"
-                android:hint="Transaction Number"
+                android:hint="Check/DD/Transaction Number"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:inputType="textCapCharacters"
                 android:paddingStart="10dp"
@@ -84,7 +84,7 @@
                 android:layout_below="@id/message"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/add_icon"
+                android:src="@drawable/placeholder"
                 android:id="@+id/add_certificate"/>
 
             <com.google.android.material.button.MaterialButton

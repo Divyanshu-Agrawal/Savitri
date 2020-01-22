@@ -38,7 +38,7 @@ import java.util.ArrayList;
 
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
-import static com.aaptrix.savitri.session.URLs.DATA_URL;
+import static com.aaptrix.savitri.activities.SplashScreen.DATA_URL;
 
 public class FullscreenView extends AppCompatActivity {
 
@@ -139,7 +139,7 @@ public class FullscreenView extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if (item.getItemId() == R.id.download) {
-            if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED) {
+            if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 downloadFile(certificate.get(pager.getCurrentItem()));
             } else {
                 isPermissionGranted();
@@ -147,7 +147,7 @@ public class FullscreenView extends AppCompatActivity {
         } else if (item.getItemId() == R.id.share) {
             String url = DATA_URL + strOrgId + "/compliances/" + certificate.get(pager.getCurrentItem());
             String fileExt = certificate.get(pager.getCurrentItem()).substring(certificate.get(pager.getCurrentItem()).lastIndexOf(".") + 1);
-            if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED) {
+            if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 File directory = Environment.getExternalStorageDirectory();
                 file = new File(directory, "temp." + fileExt);
                 new Thread(() -> {

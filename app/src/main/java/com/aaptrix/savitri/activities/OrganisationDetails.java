@@ -56,14 +56,14 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class OrganisationDetails extends AppCompatActivity {
 	
 	Toolbar toolbar;
-	EditText orgName, orgType, orgLandline, orgAddress, orgPincode, orgDetails, orgDistrict;
-	Spinner orgCity, orgState;
+	EditText orgName, orgLandline, orgAddress, orgPincode, orgDetails, orgDistrict;
+	Spinner orgCity, orgState, orgType;
 	MaterialButton registerBtn, termsBtn, privacyBtn;
 	String userName, userDob, userDesignation, userEmail, userGender, userPassword, userMobile;
 	File userProfile;
 	ProgressBar progressBar;
 	CheckBox tncCheckbox;
-	String strState, strCity;
+	String strState, strCity, strType = "Organisation Type";
 	private StateData stateData;
 	private ArrayList<StateData> stateArray = new ArrayList<>();
 	private ArrayList<String> stateName = new ArrayList<>();
@@ -162,8 +162,34 @@ public class OrganisationDetails extends AppCompatActivity {
 			if (!hasFocus)
 				hideKeyboard(v);
 		});
-		
-		
+
+		ArrayList<String> typeArray = new ArrayList<>();
+		typeArray.add("Organisation Type");
+		typeArray.add("Hospital");
+		typeArray.add("Clinic");
+		typeArray.add("Ayush Hospital");
+		typeArray.add("Blood Bank/Blood Storage Center");
+		typeArray.add("Medical Lab");
+		typeArray.add("Medical Imaging Center");
+		typeArray.add("Eye Hospitals");
+		typeArray.add("Others");
+
+		ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, typeArray);
+		typeAdapter.notifyDataSetChanged();
+		typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		orgType.setAdapter(typeAdapter);
+
+		orgType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+				strType = typeArray.get(i);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> adapterView) {
+
+			}
+		});
 		
 		cityarray.add("Select City*");
 		cityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, cityarray);
@@ -208,9 +234,8 @@ public class OrganisationDetails extends AppCompatActivity {
 			if (TextUtils.isEmpty(orgName.getText().toString())) {
 				orgName.setError("Please Enter Organisation Name");
 				orgName.requestFocus();
-			} else if (TextUtils.isEmpty(orgType.getText().toString())) {
-				orgType.setError("Please Enter Organisation Type");
-				orgType.requestFocus();
+			} else if (!strType.equals("Organisation Type")) {
+				Toast.makeText(this, "Please Select Organisation Type", Toast.LENGTH_SHORT).show();
 			} else if (TextUtils.isEmpty(orgLandline.getText().toString())) {
 				orgLandline.setError("Please Enter Organisation Number");
 				orgLandline.requestFocus();
@@ -222,9 +247,6 @@ public class OrganisationDetails extends AppCompatActivity {
 				orgAddress.requestFocus();
 			} else if (TextUtils.isEmpty(strCity)) {
 				Toast.makeText(this, "Please Select Organisation City", Toast.LENGTH_SHORT).show();
-			} else if (TextUtils.isEmpty(orgDistrict.getText().toString())) {
-				orgDistrict.setError("Please Enter District");
-				orgDistrict.requestFocus();
 			} else if (TextUtils.isEmpty(strState)) {
 				Toast.makeText(this, "Please Select Organisation State", Toast.LENGTH_SHORT).show();
 			} else if (TextUtils.isEmpty(orgPincode.getText().toString())) {
@@ -233,18 +255,16 @@ public class OrganisationDetails extends AppCompatActivity {
 			} else if (orgPincode.getText().toString().length() != 6) {
 				orgPincode.setError("Please Enter Correct Pincode");
 				orgPincode.requestFocus();
-			} else if (orgLandline.getText().toString().length() != 11) {
-				orgLandline.setError("Please Enter Correct Number");
-				orgLandline.requestFocus();
 			} else if (!tncCheckbox.isChecked()){
 				Toast.makeText(this, "Please Accept Terms and Conditions, Privacy Policy", Toast.LENGTH_SHORT).show();
 			} else {
+				registerBtn.setEnabled(false);
 				RegisterUser registerUser = new RegisterUser(this);
 				registerUser.execute(orgName.getText().toString(),
-						orgType.getText().toString(),
+						strType,
 						orgAddress.getText().toString(),
 						orgLandline.getText().toString(),
-						strState, strCity, orgDistrict.getText().toString(),
+						strState, strCity, /*orgDistrict.getText().toString(),*/
 						orgPincode.getText().toString(), orgDetails.getText().toString());
 			}
 		});
@@ -385,9 +405,9 @@ public class OrganisationDetails extends AppCompatActivity {
 			String landline = params[3];
 			String state = params[4];
 			String city = params[5];
-			String district = params[6];
-			String pincode = params[7];
-			String details = params[8];
+//			String district = params[6];
+			String pincode = params[6];
+			String details = params[7];
 			
 			try {
 				HttpClient httpclient = new DefaultHttpClient();
@@ -410,7 +430,7 @@ public class OrganisationDetails extends AppCompatActivity {
 				entityBuilder.addTextBody("org_state", state);
 				entityBuilder.addTextBody("org_city", city);
 				entityBuilder.addTextBody("org_pincode", pincode);
-				entityBuilder.addTextBody("org_district", district);
+//				entityBuilder.addTextBody("org_district", district);
 				entityBuilder.addTextBody("org_address", address);
 				entityBuilder.addTextBody("org_type", type);
 				
@@ -433,7 +453,7 @@ public class OrganisationDetails extends AppCompatActivity {
 					JSONObject jsonObject = new JSONObject(result);
 					if (jsonObject.getBoolean("success")) {
 						Toast.makeText(context, "Regsitered Successfully", Toast.LENGTH_SHORT).show();
-						LoginUser loginUser = new LoginUser(context, progressBar);
+						LoginUser loginUser = new LoginUser(context, progressBar, "login");
 						loginUser.execute(userMobile, userPassword, token);
 					} else {
 						progressBar.setVisibility(View.GONE);

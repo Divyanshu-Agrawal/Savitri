@@ -10,4 +10,5 @@
     <color name="app_info_color">#FFFFFF</color>
     <color name="cardBackground">#FDF0D9</color>
     <color name="seperater">#80B42524</color>
+    <color name="yellow">#FFC107</color>
 </resources>

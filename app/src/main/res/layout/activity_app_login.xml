@@ -14,6 +14,15 @@
         android:id="@+id/progress_bar"
         android:visibility="gone"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:id="@+id/version"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,6 +36,8 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/_100sdp"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
             android:id="@+id/login_image"
             android:src="@drawable/savitri_logo"/>
 
@@ -81,6 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_100sdp"
             android:id="@+id/image"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
             android:src="@drawable/savitri_logo"/>
 
         <EditText
@@ -144,6 +157,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_100sdp"
             android:id="@+id/otp_image"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
             android:src="@drawable/savitri_logo"/>
 
         <EditText
@@ -221,6 +236,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_100sdp"
             android:id="@+id/reg_image"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
             android:src="@drawable/savitri_logo"/>
 
         <EditText

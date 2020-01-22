@@ -9,8 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,14 +17,10 @@ import android.widget.TextView;
 
 import com.aaptrix.savitri.asyncclass.UploadCompliance;
 import com.aaptrix.savitri.asyncclass.UploadPayment;
-import com.aaptrix.savitri.asyncclass.UploadTask;
-import com.aaptrix.savitri.databeans.PeopleData;
 import com.aaptrix.savitri.session.URLs;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
@@ -53,7 +47,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ShareCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -95,14 +88,8 @@ import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_IMAGE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_NAME;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.PAYMENT_PREFS;
-import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_ASSIGN;
-import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DATE;
-import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_DETAIL;
-import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_NAME;
-import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_PEOPLE;
-import static com.aaptrix.savitri.session.SharedPrefsNames.TASK_PREFS;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
-import static com.aaptrix.savitri.session.URLs.DATA_URL;
+import static com.aaptrix.savitri.activities.SplashScreen.DATA_URL;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 	
@@ -110,7 +97,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 	ImageButton complianceBtn, renewalBtn, peopleBtn, tasksBtn, historyBtn, feedbackBtn;
 	MaterialButton upgradePlanBtn, upPlanBtn;
 	CircleImageView profImage;
-	CardView feedbackView, peopleView;
 	GridLayout gridLayout;
 	String planExpireDate;
 	TextView planName;
@@ -133,10 +119,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		
 		NavigationView navigationView = findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
-		
-		Menu menu = navigationView.getMenu();
-		MenuItem people = menu.findItem(R.id.people);
-		MenuItem feedback = menu.findItem(R.id.feedback);
+
 
 		intent = new Intent(this, PlansActivity.class);
 		View headerView = navigationView.getHeaderView(0);
@@ -148,8 +131,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		historyBtn = findViewById(R.id.history_btn);
 		feedbackBtn = findViewById(R.id.feedback_btn);
 		upgradePlanBtn = findViewById(R.id.upgrade_plan_btn);
-		feedbackView = findViewById(R.id.feedback_view);
-		peopleView = findViewById(R.id.people_view);
 		gridLayout = findViewById(R.id.grid_layout);
 		
 		profImage = headerView.findViewById(R.id.logged_user_image);
@@ -163,7 +144,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		strSessionId = sp.getString(KEY_SESSION_ID, "");
 		strUserId = sp.getString(KEY_USER_ID, "");
 		String strPlanName = sp.getString(KEY_PLAN_NAME, "");
-		fetchPeople(strOrgId, strSessionId, strUserId);
 		String url = DATA_URL + sp.getString(KEY_ORG_ID, "") + "/profile/" + sp.getString(KEY_USER_IMAGE, "");
 		Picasso.with(this).load(url).placeholder(R.drawable.user_placeholder).into(profImage);
 		userName.setText(sp.getString(KEY_USER_NAME, ""));
@@ -184,15 +164,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 		if (Objects.equals(sp.getString(KEY_ORG_PLAN_TYPE, ""), "3")) {
 			upgradePlanBtn.setText("Buy Plan Now");
 			upPlanBtn.setText("Buy Plan Now");
-		}
-
-		if (!Objects.equals(sp.getString(KEY_USER_ROLE, ""), "Admin")) {
-			gridLayout.removeView(peopleView);
-			gridLayout.removeView(feedbackView);
-			people.setVisible(false);
-			feedback.setVisible(false);
-			upgradePlanBtn.setVisibility(View.GONE);
-			upPlanBtn.setVisibility(View.GONE);
 		}
 
 		upPlanBtn.setOnClickListener(v -> {
@@ -254,16 +225,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 						comPrefs.getString(COM_NOTES, ""), comPrefs.getString(COM_VALID_FROM, ""),
 						comPrefs.getString(COM_VALID_TO, ""),
 						strUserId, comPrefs.getString(COM_OTHER_AUTH, ""), strSessionId);
-			}
-		}
-
-		SharedPreferences taskPrefs = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
-		if (checkConnection()) {
-			if (taskPrefs.getBoolean(FLAG, false)) {
-				UploadTask uploadTask = new UploadTask(this, null, "offline");
-				uploadTask.execute(strOrgId, strUserId, strSessionId,
-						taskPrefs.getString(TASK_NAME, ""), taskPrefs.getString(TASK_DETAIL, ""),
-						taskPrefs.getString(TASK_DATE, ""), taskPrefs.getString(TASK_ASSIGN, ""));
 			}
 		}
 	}
@@ -362,50 +323,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 			}
 		}).start();
 	}
-
-	private void fetchPeople(String strOrgId, String  strSessionId, String strUserId) {
-		new Thread(() -> {
-			try {
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost(URLs.ALL_PEOPLE);
-				MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-				entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-				entityBuilder.addTextBody("org_details_id", strOrgId);
-				entityBuilder.addTextBody("app_session_id", strSessionId);
-				entityBuilder.addTextBody("users_details_id", strUserId);
-				HttpEntity entity = entityBuilder.build();
-				httppost.setEntity(entity);
-				HttpResponse response = httpclient.execute(httppost);
-				HttpEntity httpEntity = response.getEntity();
-				String result = EntityUtils.toString(httpEntity);
-				Handler handler = new Handler(Looper.getMainLooper());
-				handler.post(() -> {
-					try {
-						if (!result.contains("\"success\":false,\"msg\":\"Session Expire\"") || !result.contains("{\"allMembers\":null}")) {
-							ArrayList<PeopleData> peopleArray = new ArrayList<>();
-							JSONObject jsonObject = new JSONObject(result);
-							JSONArray jsonArray = jsonObject.getJSONArray("allMembers");
-							for (int i = 0; i < jsonArray.length(); i++) {
-								JSONObject jObject = jsonArray.getJSONObject(i);
-								PeopleData data = new PeopleData();
-								data.setUsers_details_id(jObject.getString("users_details_id"));
-								data.setName(jObject.getString("users_name"));
-								peopleArray.add(data);
-							}
-							Gson gson = new GsonBuilder().create();
-							JsonArray array = gson.toJsonTree(peopleArray).getAsJsonArray();
-							SharedPreferences sp = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
-							sp.edit().putString(TASK_PEOPLE, array.toString()).apply();
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-				});
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}).start();
-	}
 	
 	@Override
 	public void onResume() {
@@ -427,16 +344,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 						comPrefs.getString(COM_NOTES, ""), comPrefs.getString(COM_VALID_FROM, ""),
 						comPrefs.getString(COM_VALID_TO, ""),
 						strUserId, comPrefs.getString(COM_OTHER_AUTH, ""), strSessionId);
-			}
-		}
-
-		SharedPreferences taskPrefs = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
-		if (checkConnection()) {
-			if (taskPrefs.getBoolean(FLAG, false)) {
-				UploadTask uploadTask = new UploadTask(this, null, "offline");
-				uploadTask.execute(strOrgId, strUserId, strSessionId,
-						taskPrefs.getString(TASK_NAME, ""), taskPrefs.getString(TASK_DETAIL, ""),
-						taskPrefs.getString(TASK_DATE, ""), taskPrefs.getString(TASK_ASSIGN, ""));
 			}
 		}
 
@@ -539,6 +446,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 					.show();
 		} else if (id == R.id.pay_history) {
 			startActivity(new Intent(this, PaymentHistory.class));
+		} else if (id == R.id.about_savitri) {
+			startActivity(new Intent(this, AboutSavitri.class));
 		}
 		drawer.closeDrawer(GravityCompat.START);
 		return false;

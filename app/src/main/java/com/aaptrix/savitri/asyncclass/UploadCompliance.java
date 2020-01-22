@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.aaptrix.savitri.activities.AppLogin;
@@ -39,11 +40,11 @@ public class UploadCompliance extends AsyncTask<String, String, String> {
     @SuppressLint("StaticFieldLeak")
     private Context context;
     @SuppressLint("StaticFieldLeak")
-    private ProgressBar progressBar;
+    private RelativeLayout progressBar;
     private ArrayList<File> filepath;
     private String type;
 
-    public UploadCompliance(Context context, ProgressBar progressBar, ArrayList<File> filepath, String type) {
+    public UploadCompliance(Context context, RelativeLayout progressBar, ArrayList<File> filepath, String type) {
         this.context = context;
         this.progressBar = progressBar;
         this.filepath = filepath;

@@ -44,7 +44,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.08"
-                android:text="Compliance Details"
+                android:text="Task Details"
                 android:gravity="center_vertical"
                 android:paddingStart="10dp"
                 android:background="@android:color/white"
@@ -91,16 +91,17 @@
         android:visibility="gone"
         android:id="@+id/progress_bar"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        app:backgroundTint="@color/colorAccent"
-        app:tint="@android:color/white"
-        android:layout_marginEnd="@dimen/_20sdp"
-        android:layout_marginBottom="@dimen/_20sdp"
-        android:id="@+id/add_tasks"
-        android:src="@drawable/add_icon"/>
+    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--app:backgroundTint="@color/colorAccent"-->
+        <!--app:tint="@android:color/white"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_marginEnd="@dimen/_20sdp"-->
+        <!--android:layout_marginBottom="@dimen/_20sdp"-->
+        <!--android:id="@+id/add_tasks"-->
+        <!--android:src="@drawable/add_icon"/>-->
 
 </RelativeLayout>

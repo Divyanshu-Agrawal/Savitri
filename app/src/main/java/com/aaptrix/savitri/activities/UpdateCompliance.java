@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +58,7 @@ public class UpdateCompliance extends AppCompatActivity {
 	Spinner issuingAuth;
 	String strIssueAuth, strOrgId, strUserId, strSessionId;
 	Toolbar toolbar;
-	ProgressBar progressBar;
+	RelativeLayout progressBar;
 	MaterialButton updateCompliance;
 	ArrayList<String> issueAuth = new ArrayList<>();
 	ArrayAdapter<String> issueAuthAdapter;
@@ -84,6 +85,9 @@ public class UpdateCompliance extends AppCompatActivity {
 		issuingAuth = findViewById(R.id.update_compliance_issue_auth);
 		updateCompliance = findViewById(R.id.update_compliance_btn);
 		otherIssueAuth = findViewById(R.id.update_compliance_other_auth);
+
+		progressBar.setOnClickListener(v1 -> {});
+		progressBar.setOnTouchListener((v1, event) -> false);
 
 		complianceName.setOnFocusChangeListener((v, hasFocus) -> {
 			if (!hasFocus)
@@ -189,12 +193,14 @@ public class UpdateCompliance extends AppCompatActivity {
 					otherIssueAuth.setError("Please Enter Issuing Authority");
 					otherIssueAuth.requestFocus();
 				} else {
+					updateCompliance.setEnabled(false);
 					UpdateComp uploadCompliance = new UpdateComp(this);
 					uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
 							complianceRefNo.getText().toString(), strIssueAuth,
 							complianceNotes.getText().toString(), strUserId, otherIssueAuth.getText().toString());
 				}
 			} else {
+				updateCompliance.setEnabled(false);
 				UpdateComp uploadCompliance = new UpdateComp(this);
 				uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
 						complianceRefNo.getText().toString(), strIssueAuth,

@@ -62,6 +62,11 @@
             android:icon="@drawable/share_icon"/>
 
         <item
+            android:id="@+id/about_savitri"
+            android:title="About Savitri"
+            android:icon="@drawable/app_info_icon"/>
+
+        <item
             android:id="@+id/app_info"
             android:title="App Info"
             android:icon="@drawable/app_info_icon"/>

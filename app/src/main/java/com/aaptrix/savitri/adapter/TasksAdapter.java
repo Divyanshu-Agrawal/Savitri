@@ -4,39 +4,38 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import com.aaptrix.savitri.R;
-import com.aaptrix.savitri.activities.TaskDetail;
-import com.aaptrix.savitri.databeans.TasksData;
+import com.aaptrix.savitri.activities.RenewDetails;
+import com.aaptrix.savitri.databeans.ComplianceData;
 import com.aaptrix.savitri.session.FormatDate;
 import androidx.annotation.NonNull;
 
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 
-public class TasksAdapter extends ArrayAdapter<TasksData> {
+public class TasksAdapter extends ArrayAdapter<ComplianceData> {
 	
 	private Context context;
 	private int resource;
-	private ArrayList<TasksData> object;
+	private ArrayList<ComplianceData> object;
 	
 	class ViewHolder {
 		
 		TextView taskName, assignedTo, severity, dueDate, dueMonth;
 		ImageButton more;
 		
+		@SuppressLint("NewApi")
 		ViewHolder(@NonNull View view) {
 			taskName = view.findViewById(R.id.renewal_compliance_name);
 			assignedTo = view.findViewById(R.id.renewal_assigned_people);
@@ -45,11 +44,12 @@ public class TasksAdapter extends ArrayAdapter<TasksData> {
 			dueDate = view.findViewById(R.id.due_date);
 			dueMonth = view.findViewById(R.id.due_month_year);
 			more = view.findViewById(R.id.renewal_more);
-			more.setVisibility(View.GONE);
+			more.setImageResource(R.drawable.app_info_icon);
+			more.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.yellow)));
 		}
 	}
 	
-	public TasksAdapter(Context context, int resource, ArrayList<TasksData> object) {
+	public TasksAdapter(Context context, int resource, ArrayList<ComplianceData> object) {
 		super(context, resource, object);
 		this.context = context;
 		this.resource = resource;
@@ -65,55 +65,51 @@ public class TasksAdapter extends ArrayAdapter<TasksData> {
 		view = inflater.inflate(resource, null);
 		ViewHolder holder = new ViewHolder(view);
 		if (object != null) {
-			TasksData data = object.get(position);
-			holder.taskName.setText(data.getTaskName());
-			holder.assignedTo.setText(data.getTaskDesc());
+			ComplianceData data = object.get(position);
+			holder.taskName.setText(data.getName());
 			SharedPreferences sp = context.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
-			ArrayList<String> array = new ArrayList<>();
 			if (sp.getString(KEY_USER_ROLE, "").equals("Admin")) {
-				try {
-					JSONObject jsonObject = new JSONObject(data.getAssignedTo());
-					for (int i = 0; i < 5; i++) {
-						JSONObject jObject = jsonObject.getJSONObject("assign_users_list" + i);
-						array.add(jObject.getString("users_name"));
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				
-				if (array.size() > 1) {
-					int size = array.size() - 1;
-					holder.assignedTo.setText(array.get(0) + " +" + size);
-				} else if (array.size() == 1) {
-					holder.assignedTo.setText(array.get(0));
+				holder.assignedTo.setText(data.getAssignedTo());
+				if (data.getMarkReview().equals("1")) {
+					holder.more.setVisibility(View.VISIBLE);
 				} else {
-					holder.assignedTo.setText("Not Assigned");
+					holder.more.setVisibility(View.GONE);
 				}
 			} else {
-				holder.assignedTo.setText(data.getStatus());
+				if (data.getMarkReview().equals("1")) {
+					holder.assignedTo.setText("Marked for review");
+					holder.more.setVisibility(View.VISIBLE);
+				} else {
+					holder.assignedTo.setText(data.getStatus());
+					holder.more.setVisibility(View.GONE);
+				}
 			}
 			
-			view.setOnClickListener(v -> {
-				if (data.getTaskId() != null) {
-					Intent intent = new Intent(context, TaskDetail.class);
-					intent.putExtra("assignedBy", data.getAssignedBy());
-					intent.putExtra("assignName", data.getAssignedByName());
-					intent.putExtra("assignedTo", data.getAssignedTo());
-					intent.putExtra("name", data.getTaskName());
-					intent.putExtra("desc", data.getTaskDesc());
-					intent.putExtra("due_date", data.getTaskDueDate());
-					intent.putExtra("id", data.getTaskId());
-					intent.putExtra("status", data.getStatus());
-					context.startActivity(intent);
-				} else {
-					Toast.makeText(context, "Task not uploaded yet please connect to internet", Toast.LENGTH_SHORT).show();
-				}
-			});
-			
-			FormatDate date = new FormatDate(data.getTaskDueDate(), "yyyy-MM-dd", "dd-MMM-yyyy");
+			FormatDate date = new FormatDate(data.getValidTo(), "yyyy-MM-dd", "dd-MMM-yyyy");
 			String[] ddmmmyyyy = date.format().split("-");
 			holder.dueDate.setText(ddmmmyyyy[0]);
 			holder.dueMonth.setText(ddmmmyyyy[1] + ", " + ddmmmyyyy[2]);
+
+			view.setOnClickListener(v -> {
+				Intent intent = new Intent(context, RenewDetails.class);
+				intent.putExtra("name", data.getName());
+				intent.putExtra("refNo", data.getRefNo());
+				if (data.getIssueAuth().equals("Other")) {
+					intent.putExtra("issueAuth", data.getOtherAuth());
+				} else {
+					intent.putExtra("issueAuth", data.getIssueAuth());
+				}
+				intent.putExtra("id", data.getId());
+				intent.putExtra("validFrom", data.getValidfrom());
+				intent.putExtra("validTo", data.getValidTo());
+				intent.putExtra("notes", data.getNotes());
+				intent.putExtra("assignedTo", data.getAssignedTo());
+				intent.putExtra("certificate", data.getCertificate());
+				intent.putExtra("status", data.getStatus());
+				intent.putExtra("markReview", data.getMarkReview());
+				context.startActivity(intent);
+			});
+
 		}
 		return view;
 	}

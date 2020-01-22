@@ -116,7 +116,7 @@ public class PaymentHistory extends AppCompatActivity {
                     data.setType("Online");
                     data.setStatus(jObject.getString("payment_status"));
                     data.setAmount(jObject.getString("txnAmount"));
-                    data.setDate(jObject.getString("entrydt"));
+                    data.setDate(jObject.getString("txn_date"));
                     data.setEmail(jObject.getString("email"));
                     data.setMethod(jObject.getString("payment_method"));
                     data.setMobno(jObject.getString("mobileNo"));

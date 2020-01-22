@@ -2,6 +2,7 @@ package com.aaptrix.savitri.activities;
 
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.adapter.TasksAdapter;
+import com.aaptrix.savitri.databeans.ComplianceData;
 import com.aaptrix.savitri.databeans.TasksData;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
@@ -80,9 +81,8 @@ public class TasksActivity extends AppCompatActivity {
 	ListView listView;
 	SwipeRefreshLayout swipeRefreshLayout;
 	TasksAdapter adapter;
-	ArrayList<TasksData> tasksArray = new ArrayList<>();
-	String strOrgId, strSessionId, strUserId, strUserRole, strPlan, strUserName;
-	FloatingActionButton addTasks;
+	ArrayList<ComplianceData> tasksArray = new ArrayList<>();
+	String strOrgId, strSessionId, strUserId, strUserRole, strUserName;
 	RelativeLayout layout;
 	
 	@Override
@@ -98,7 +98,6 @@ public class TasksActivity extends AppCompatActivity {
 		noTasks = findViewById(R.id.no_tasks);
 		listView = findViewById(R.id.tasks_listview);
 		swipeRefreshLayout = findViewById(R.id.swipe_refresh);
-		addTasks = findViewById(R.id.add_tasks);
 		layout = findViewById(R.id.layout);
 		
 		SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
@@ -107,7 +106,6 @@ public class TasksActivity extends AppCompatActivity {
 		strUserId = sp.getString(KEY_USER_ID, "");
 		strUserRole = sp.getString(KEY_USER_ROLE, "");
 		strUserName = sp.getString(KEY_USER_NAME, "");
-		strPlan = sp.getString(KEY_ORG_PLAN_TYPE, "");
 		progressBar.setVisibility(View.VISIBLE);
 		setTasks();
 		swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -116,14 +114,7 @@ public class TasksActivity extends AppCompatActivity {
 			tasksArray.clear();
 			setTasks();
 		});
-		
-		if (sp.getString(KEY_USER_ROLE, "").equals("Admin")) {
-			addTasks.setVisibility(View.VISIBLE);
-		} else {
-			addTasks.setVisibility(View.GONE);
-		}
-		
-		addTasks.setOnClickListener(v -> startActivity(new Intent(this, AddTask.class).putExtra("type", "add")));
+
 	}
 	
 	private void setTasks() {
@@ -143,18 +134,23 @@ public class TasksActivity extends AppCompatActivity {
 				in.close();
 				Log.e("tasks", json);
 				JSONObject jsonObject = new JSONObject(json);
-				JSONArray jsonArray = jsonObject.getJSONArray("allTasks");
+				JSONArray jsonArray = jsonObject.getJSONArray("allCompliance");
 				for (int i = 0; i < jsonArray.length(); i++) {
 					JSONObject jObject = jsonArray.getJSONObject(i);
-					TasksData data = new TasksData();
-					data.setTaskId(jObject.getString("tasks_details_id"));
-					data.setTaskName(jObject.getString("tasks_details_name"));
-					data.setTaskDesc(jObject.getString("tasks_details_desc"));
-					data.setTaskDueDate(jObject.getString("tasks_details_due_date"));
-					data.setAssignedBy(jObject.getString("users_details_id"));
-					data.setStatus(jObject.getString("tasks_assign_status"));
-					data.setAssignedByName(jObject.getString("users_name"));
-					data.setAssignedTo(jObject.toString());
+					ComplianceData data = new ComplianceData();
+					data.setId(jObject.getString("compliance_id"));
+					data.setName(jObject.getString("compliance_name"));
+					data.setIssueAuth(jObject.getString("compliance_issuing_auth"));
+					data.setAddedDate(jObject.getString("compliance_added_date"));
+					data.setCertificate(jObject.getString("compliance_certificates"));
+					data.setNotes(jObject.getString("compliance_notes"));
+					data.setOtherAuth(jObject.getString("compliance_issuing_auth_other"));
+					data.setRefNo(jObject.getString("compliance_reference_no"));
+					data.setValidfrom(jObject.getString("compliance_valid_from"));
+					data.setValidTo(jObject.getString("compliance_valid_upto"));
+					data.setAssignedTo(jObject.getString("assign_users_name"));
+					data.setStatus(jObject.getString("compliance_assign_status"));
+					data.setMarkReview(jObject.getString("markas_review"));
 					tasksArray.add(data);
 				}
 				throw fe;
@@ -198,24 +194,29 @@ public class TasksActivity extends AppCompatActivity {
 							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 							startActivity(intent);
 							finish();
-						} else if (result.contains("{\"allTasks\":null}") || result.isEmpty()) {
+						} else if (result.contains("{\"allCompliance\":null}") || result.isEmpty()) {
 							noTasks.setVisibility(View.VISIBLE);
 							progressBar.setVisibility(View.GONE);
 						} else {
 							JSONObject jsonObject = new JSONObject(result);
 							cacheJson(jsonObject);
-							JSONArray jsonArray = jsonObject.getJSONArray("allTasks");
+							JSONArray jsonArray = jsonObject.getJSONArray("allCompliance");
 							for (int i = 0; i < jsonArray.length(); i++) {
 								JSONObject jObject = jsonArray.getJSONObject(i);
-								TasksData data = new TasksData();
-								data.setTaskId(jObject.getString("tasks_details_id"));
-								data.setTaskName(jObject.getString("tasks_details_name"));
-								data.setTaskDesc(jObject.getString("tasks_details_desc"));
-								data.setTaskDueDate(jObject.getString("tasks_details_due_date"));
-								data.setAssignedBy(jObject.getString("users_details_id"));
-								data.setStatus(jObject.getString("tasks_assign_status"));
-								data.setAssignedByName(jObject.getString("users_name"));
-								data.setAssignedTo(jObject.toString());
+								ComplianceData data = new ComplianceData();
+								data.setId(jObject.getString("compliance_id"));
+								data.setName(jObject.getString("compliance_name"));
+								data.setIssueAuth(jObject.getString("compliance_issuing_auth"));
+								data.setAddedDate(jObject.getString("compliance_added_date"));
+								data.setCertificate(jObject.getString("compliance_certificates"));
+								data.setNotes(jObject.getString("compliance_notes"));
+								data.setOtherAuth(jObject.getString("compliance_issuing_auth_other"));
+								data.setRefNo(jObject.getString("compliance_reference_no"));
+								data.setValidfrom(jObject.getString("compliance_valid_from"));
+								data.setValidTo(jObject.getString("compliance_valid_upto"));
+								data.setAssignedTo(jObject.getString("assign_users_name"));
+								data.setStatus(jObject.getString("compliance_assign_status"));
+								data.setMarkReview(jObject.getString("markas_review"));
 								tasksArray.add(data);
 							}
 						}
@@ -231,29 +232,15 @@ public class TasksActivity extends AppCompatActivity {
 	}
 	
 	private void listItem() {
-		SharedPreferences taskPrefs = getSharedPreferences(TASK_PREFS, Context.MODE_PRIVATE);
-		if (taskPrefs.getBoolean(FLAG, false)) {
-			TasksData data = new TasksData();
-			data.setTaskId(null);
-			data.setTaskName(taskPrefs.getString(TASK_NAME, ""));
-			data.setTaskDesc(taskPrefs.getString(TASK_DETAIL, ""));
-			data.setTaskDueDate(taskPrefs.getString(TASK_DATE, ""));
-			data.setAssignedBy(strUserId);
-			data.setStatus(null);
-			data.setAssignedByName(strUserName);
-			data.setAssignedTo(taskPrefs.getString(TASK_ASSIGN, ""));
-			tasksArray.add(data);
-		}
 		Collections.sort(tasksArray, (o1, o2) -> {
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 			try {
-				return sdf.parse(o1.getTaskDueDate()).compareTo(sdf.parse(o2.getTaskDueDate()));
+				return sdf.parse(o1.getValidTo()).compareTo(sdf.parse(o2.getValidTo()));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			return 0;
 		});
-		Collections.reverse(tasksArray);
 		progressBar.setVisibility(View.GONE);
 		swipeRefreshLayout.setRefreshing(false);
 		adapter = new TasksAdapter(this, R.layout.list_renewal_status, tasksArray);

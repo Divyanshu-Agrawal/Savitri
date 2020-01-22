@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Savitri</string>
-    <string name="title_activity_dashboard">Savitri</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
     <string name="phone_address">+91 6260 9696 47</string>
     <string name="contact_details">Contact Details</string>
     <string name="web_address">www.aaptrix.com</string>
@@ -14,4 +12,13 @@
     <string name="privacy_policy"><u>Privacy Policy</u></string>
     <string name="terms"><u>Terms &amp; Condition</u></string>
     <string name="tagline">Compliance Tracking Assistant</string>
+
+    <string name="about_savitri">The objective of this app is to inform about the renewal of compliances for the organization.
+        \nThis app will provide the following services as mentioned below</string>
+
+    <string name="about_points">&#8226; Timely inform for the renewal of various compliances related to the organization.\n\n&#8226; Empower you to assign your staff for the renewal of compliances.\n\n&#8226; Identify those compliances which are having short expiry.</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+
+
 </resources>

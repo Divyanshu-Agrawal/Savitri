@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +62,7 @@ public class UpdateOrgDetails extends AppCompatActivity {
     String name, type, phone, address, pincode, details, state, city, district;
     String strOrgId, strSessionId;
     MaterialButton registerBtn;
-    ProgressBar progressBar;
+    RelativeLayout progressBar;
     String strState, strCity, strDistrict;
     private StateData stateData;
     private ArrayList<StateData> stateArray = new ArrayList<>();
@@ -93,6 +94,9 @@ public class UpdateOrgDetails extends AppCompatActivity {
         orgDetails = findViewById(R.id.organisation_details);
         progressBar = findViewById(R.id.progress_bar);
         progressBar.bringToFront();
+
+        progressBar.setOnTouchListener((v1, event) -> false);
+        progressBar.setOnClickListener(v1 -> {});
 
         SharedPreferences sp = getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
         strOrgId = sp.getString(KEY_ORG_ID, "");
@@ -242,6 +246,7 @@ public class UpdateOrgDetails extends AppCompatActivity {
                 orgLandline.setError("Please Enter Correct Number");
                 orgLandline.requestFocus();
             } else {
+                registerBtn.setEnabled(false);
                 UpdateOrg updateOrg = new UpdateOrg(this);
                 updateOrg.execute(orgName.getText().toString(),
                         orgType.getText().toString(),

@@ -1,11 +1,12 @@
 package com.aaptrix.savitri.session;
 
+import static com.aaptrix.savitri.activities.SplashScreen.ROOT_URL;
+
 public class URLs {
 
-    private static final String ROOT_URL = "https://www.aaptrix.com/savitri/savitriapis/";
     public static final String PRIVACY_URL = "http://www.aaptrix.com/savitri/app-policies/privacy_policy.html";
     public static final String TnC_URL = "http://www.aaptrix.com/savitri/app-policies/terms_and_conditions.html";
-    public static final String DATA_URL = "https://www.aaptrix.com/savitri/storage/app/public/org/org_";
+    public static final String REFUND_POLICY_URL = "http://www.aaptrix.com/savitri/app-policies/refund_policy.html";
 
     public static final String LOGIN_URL = ROOT_URL + "login.php";
     public static final String ORG_REGISTER_URL = ROOT_URL + "org_registration.php";
@@ -30,11 +31,9 @@ public class URLs {
     public static final String SEND_FEEDBACK = ROOT_URL + "addFeedback.php";
     public static final String ALL_TASKS = ROOT_URL + "allTasks.php";
     public static final String UPDATE_PROFILE = ROOT_URL + "profileUpdate.php";
-    public static final String ADD_TASK = ROOT_URL + "addTasks.php";
-    public static final String UPDATE_TASK = ROOT_URL + "editTasks.php";
     public static final String ASSIGN_TASK = ROOT_URL + "assignTasks.php";
-    public static final String DELETE_TASK = ROOT_URL + "deleteTask.php";
-    public static final String COMPLETE_TASK = ROOT_URL + "completedTask.php";
+    public static final String ALL_COMMENTS = ROOT_URL + "taskCommentList.php";
+    public static final String ADD_COMMENT = ROOT_URL + "addTaskComment.php";
     public static final String ALL_HISTORY = ROOT_URL + "complianceHistory.php";
     public static final String ASSIGN_RENEWAL = ROOT_URL + "assignComplianceRenewals.php";
     public static final String OFFLINE_PURCHASE_DETAIL = ROOT_URL + "appSetting.php";
@@ -44,4 +43,6 @@ public class URLs {
     public static final String GENERATE_CHECKSUM = ROOT_URL + "paytmChecksum.php";
     public static final String UPDATE_PAYMENT = ROOT_URL + "paytmApiResponseSave.php";
     public static final String PAYMENT_HISTORY = ROOT_URL + "paymentHistory.php";
+    public static final String COMPLIANCE_REVIEW = ROOT_URL + "complianceMarkasReview.php";
+    public static final String GET_REVIEW = ROOT_URL + "viewComplianceMarkasReview.php";
 }

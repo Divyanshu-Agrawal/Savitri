@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -87,7 +89,7 @@ public class AddNewCompliance extends AppCompatActivity {
 	Spinner issuingAuth;
 	String strIssueAuth, strValidFrom = "", strValidUpto = "", strOrgId, strUserId, strSessionId;
 	Toolbar toolbar;
-	ProgressBar progressBar;
+	RelativeLayout progressBar;
 	MaterialButton addCompliance;
 	Button uploadCertificate;
 	TextView certCount;
@@ -194,6 +196,12 @@ public class AddNewCompliance extends AppCompatActivity {
 			
 			}
 		});
+
+		progressBar.setOnClickListener(v1 -> {
+
+		});
+
+		progressBar.setOnTouchListener((v1, event) -> false);
 		
 		uploadCertificate.setOnClickListener(v -> {
 			if (PermissionChecker.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -279,6 +287,7 @@ public class AddNewCompliance extends AppCompatActivity {
 					otherIssueAuth.setError("Please Enter Issuing Authority");
 					otherIssueAuth.requestFocus();
 				} else {
+					addCompliance.setEnabled(false);
 					if (checkConnection()) {
 						UploadCompliance uploadCompliance = new UploadCompliance(this, progressBar, filepath, "online");
 						uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
@@ -307,6 +316,7 @@ public class AddNewCompliance extends AppCompatActivity {
 					}
 				}
 			} else {
+				addCompliance.setEnabled(false);
 				if (checkConnection()) {
 					UploadCompliance uploadCompliance = new UploadCompliance(this, progressBar, filepath, "online");
 					uploadCompliance.execute(strOrgId, complianceName.getText().toString(),
@@ -395,18 +405,29 @@ public class AddNewCompliance extends AppCompatActivity {
 							try {
 								int length = 0;
 								for (int j = 0; j < clipData.getItemCount(); j++) {
-									length = length + (int) FileUtil.from(this, clipData.getItemAt(j).getUri()).length();
+									String fileExt = FileUtil.from(this, clipData.getItemAt(j).getUri()).toString().substring(FileUtil.from(this, clipData.getItemAt(j).getUri()).toString().lastIndexOf(".") + 1);
+									if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+										length = (int) new Compressor(this)
+												.setMaxWidth(1280)
+												.setMaxHeight(720)
+												.setQuality(25)
+												.setCompressFormat(Bitmap.CompressFormat.JPEG)
+												.compressToFile(FileUtil.from(this, clipData.getItemAt(j).getUri())).length();
+									} else {
+										length = (int) FileUtil.from(this, data.getData()).length();
+									}
+									Log.e("length", "" + length);
 								}
 								for (int j = 0; j < filepath.size(); j++) {
 									length = length + (int) filepath.get(j).length();
 								}
-								String fileExt = clipData.getItemAt(i).getUri().toString().substring(clipData.getItemAt(i).getUri().toString().lastIndexOf(".") + 1);
+								String fileExt = FileUtil.from(this, clipData.getItemAt(i).getUri()).toString().substring(FileUtil.from(this, clipData.getItemAt(i).getUri()).toString().lastIndexOf(".") + 1);
 								if (length <= 1024000) {
 									if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
 										filepath.add(new Compressor(this)
 												.setMaxWidth(1280)
 												.setMaxHeight(720)
-												.setQuality(75)
+												.setQuality(25)
 												.setCompressFormat(Bitmap.CompressFormat.JPEG)
 												.compressToFile(FileUtil.from(this, clipData.getItemAt(i).getUri())));
 									} else {
@@ -427,22 +448,35 @@ public class AddNewCompliance extends AppCompatActivity {
 				} else {
 					try {
 						if (filepath.size() <= 5) {
-							int length = (int) FileUtil.from(this, data.getData()).length();
+							int length;
+							String fileExt = FileUtil.from(this, data.getData()).toString().substring(FileUtil.from(this, data.getData()).toString().lastIndexOf(".") + 1);
+							if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
+								length = (int) new Compressor(this)
+										.setMaxWidth(1280)
+										.setMaxHeight(720)
+										.setQuality(25)
+										.setCompressFormat(Bitmap.CompressFormat.JPEG)
+										.compressToFile(FileUtil.from(this, data.getData())).length();
+								Log.e("length", ""+length);
+							} else {
+								length = (int) FileUtil.from(this, data.getData()).length();
+							}
 							for (int j = 0; j < filepath.size(); j++) {
 								length = length + (int) filepath.get(j).length();
 							}
-							String fileExt = data.getData().toString().substring(data.getData().toString().lastIndexOf(".") + 1);
 							if (length <= 1024000) {
 								if (fileExt.equals("jpg") || fileExt.equals("jpeg") || fileExt.equals("png")) {
 									filepath.add(new Compressor(this)
 											.setMaxWidth(1280)
 											.setMaxHeight(720)
-											.setQuality(75)
+											.setQuality(25)
 											.setCompressFormat(Bitmap.CompressFormat.JPEG)
 											.compressToFile(FileUtil.from(this, data.getData())));
 									certCount.setText(filepath.size() + " Files Selected");
 								} else {
-									filepath.add(FileUtil.from(this, data.getData()));
+									if((int)FileUtil.from(this, data.getData()).length() < 1024000)
+
+										filepath.add(FileUtil.from(this, data.getData()));
 									certCount.setText(filepath.size() + " Files Selected");
 								}
 							} else {

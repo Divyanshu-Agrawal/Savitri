@@ -4,37 +4,27 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.databeans.PlansData;
 import com.aaptrix.savitri.session.URLs;
-import com.paytm.pgsdk.PaytmMerchant;
 import com.paytm.pgsdk.PaytmOrder;
 import com.paytm.pgsdk.PaytmPGService;
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,8 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
 
 import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
@@ -59,6 +47,8 @@ import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_NAME;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_RESPONSE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USEREMAIL;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USERPHONE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.PAYMENT_PREFS;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
@@ -72,6 +62,7 @@ public class BuyPlan extends AppCompatActivity {
     CardView offlineBtn, onlineBtn;
     String userPhone, userEmail, userId, orgId, orgName, sessionId, orderId;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,8 +83,10 @@ public class BuyPlan extends AppCompatActivity {
         orgId = sp.getString(KEY_ORG_ID, "");
         sessionId = sp.getString(KEY_SESSION_ID, "");
         orgName = sp.getString(KEY_ORG_NAME, "");
+        userPhone = sp.getString(KEY_USERPHONE, "");
+        userEmail = sp.getString(KEY_USEREMAIL, "");
 
-        planCost.setText(plansData.getPlanCost());
+        planCost.setText("₹ " + plansData.getPlanCost());
         planName.setText(plansData.getName());
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
@@ -110,46 +103,9 @@ public class BuyPlan extends AppCompatActivity {
 
         onlineBtn.setOnClickListener(v -> {
             progressLayout.setVisibility(View.VISIBLE);
-            userDetail(userId, orgId, sessionId);
+            generateChecksum();
         });
 
-    }
-
-    private void userDetail(String userId, String orgId, String sessionID) {
-        new Thread(() -> {
-            try {
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost(URLs.ALL_PEOPLE);
-                MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
-                entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                entityBuilder.addTextBody("org_details_id", orgId);
-                entityBuilder.addTextBody("app_session_id", sessionID);
-                entityBuilder.addTextBody("users_details_id", userId);
-                entityBuilder.addTextBody("profile", "profile");
-                HttpEntity entity = entityBuilder.build();
-                httppost.setEntity(entity);
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity httpEntity = response.getEntity();
-                String result = EntityUtils.toString(httpEntity);
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(() -> {
-                    try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        JSONArray jsonArray = jsonObject.getJSONArray("profileDetails");
-                        JSONObject jObject = jsonArray.getJSONObject(0);
-                        userPhone = jObject.getString("users_mobileno");
-                        userEmail = jObject.getString("users_email");
-                        generateChecksum();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        userPhone = "1234567890";
-                        userEmail = "testemail@test.com";
-                    }
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 
     private void generateChecksum() {
@@ -159,17 +115,17 @@ public class BuyPlan extends AppCompatActivity {
                 HttpPost httppost = new HttpPost(URLs.GENERATE_CHECKSUM);
                 MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
                 entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-                entityBuilder.addTextBody("merchantMid", "MID Here");
-                entityBuilder.addTextBody("merchantKey", "Merchant Key Here");
+                entityBuilder.addTextBody("merchantMid", "NeevCo85136604033745");
+                entityBuilder.addTextBody("merchantKey", "9cAt%GDpHv3V7L_i");
                 entityBuilder.addTextBody("orderId", orderId);
                 entityBuilder.addTextBody("channelId", "WAP");
                 entityBuilder.addTextBody("custId", orgId);
                 entityBuilder.addTextBody("mobileNo", userPhone);
                 entityBuilder.addTextBody("email", userEmail);
                 entityBuilder.addTextBody("txnAmount", plansData.getPlanCost());
-                entityBuilder.addTextBody("website", "APPSTAGING");
-                entityBuilder.addTextBody("industryTypeId", "Retail");
-                entityBuilder.addTextBody("callbackUrl", "https://securegw-stage.paytm.in/theia/paytmCallback");
+                entityBuilder.addTextBody("website", "WEBPROD");
+                entityBuilder.addTextBody("industryTypeId", "Retail105");
+                entityBuilder.addTextBody("callbackUrl", "https://securegw.paytm.in/theia/paytmCallback");
                 HttpEntity entity = entityBuilder.build();
                 httppost.setEntity(entity);
                 HttpResponse response = httpclient.execute(httppost);
@@ -178,13 +134,11 @@ public class BuyPlan extends AppCompatActivity {
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(() -> {
                     try {
-                        Log.e("res", result);
                         JSONObject jsonObject = new JSONObject(result);
                         requestPaytm(jsonObject.getString("CHECKSUMHASH"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 });
             } catch (IOException e) {
                 e.printStackTrace();
@@ -193,22 +147,23 @@ public class BuyPlan extends AppCompatActivity {
     }
 
     private void requestPaytm(String checksum) {
-        PaytmPGService Service = PaytmPGService.getStagingService();
+        PaytmPGService Service = PaytmPGService.getProductionService();
         HashMap<String, String> paramMap = new HashMap<>();
-        paramMap.put("MID", "MID Here");
+        paramMap.put("MID", "NeevCo85136604033745");
         paramMap.put("ORDER_ID", orderId);
         paramMap.put("CUST_ID", orgId);
         paramMap.put("MOBILE_NO", userPhone);
         paramMap.put("EMAIL", userEmail);
         paramMap.put("CHANNEL_ID", "WAP");
         paramMap.put("TXN_AMOUNT", plansData.getPlanCost());
-        paramMap.put("WEBSITE", "APPSTAGING");
-        paramMap.put("INDUSTRY_TYPE_ID", "Retail");
-        paramMap.put("CALLBACK_URL", "https://securegw-stage.paytm.in/theia/paytmCallback");
+        paramMap.put("WEBSITE", "WEBPROD");
+        paramMap.put("INDUSTRY_TYPE_ID", "Retail105");
+        paramMap.put("CALLBACK_URL", "https://securegw.paytm.in/theia/paytmCallback");
         paramMap.put("CHECKSUMHASH", checksum);
+        Log.e("params", paramMap.toString());
         PaytmOrder Order = new PaytmOrder(paramMap);
         Service.initialize(Order, null);
-        Service.startPaymentTransaction(this, true, true, new PaytmPaymentTransactionCallback() {
+        Service.startPaymentTransaction(this, false, true, new PaytmPaymentTransactionCallback() {
 
             public void someUIErrorOccurred(String inErrorMessage) {
                 if (!BuyPlan.this.isFinishing()) {
@@ -225,21 +180,14 @@ public class BuyPlan extends AppCompatActivity {
                 progressLayout.setVisibility(View.GONE);
                 SharedPreferences sp = BuyPlan.this.getSharedPreferences(PAYMENT_PREFS, Context.MODE_PRIVATE);
                 sp.edit().putString(KEY_RESPONSE, inResponse.toString()).apply();
-                if (checksum.equals(inResponse.getString("CHECKSUMHASH"))) {
-                    Intent intent = new Intent(BuyPlan.this, PaymentActivity.class);
-                    intent.putExtra("response", inResponse);
-                    intent.putExtra("type", "payment");
-                    intent.putExtra("mobile", userPhone);
-                    intent.putExtra("email", userEmail);
-                    intent.putExtra("plansdata", plansData);
-                    startActivity(intent);
-                } else {
-                    new AlertDialog.Builder(BuyPlan.this)
-                            .setMessage("Error!")
-                            .setPositiveButton("Ok", (dialog, which) -> dialog.dismiss())
-                            .setCancelable(false)
-                            .show();
-                }
+                Log.e("response", inResponse.toString());
+                Intent intent = new Intent(BuyPlan.this, PaymentActivity.class);
+                intent.putExtra("response", inResponse);
+                intent.putExtra("type", "payment");
+                intent.putExtra("mobile", userPhone);
+                intent.putExtra("email", userEmail);
+                intent.putExtra("plansdata", plansData);
+                startActivity(intent);
             }
 
             public void networkNotAvailable() {

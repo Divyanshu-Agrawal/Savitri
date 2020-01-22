@@ -69,7 +69,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:background="@drawable/custom_textbox"/>
 
-        <EditText
+        <Spinner
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40sdp"
             android:layout_centerHorizontal="true"
@@ -95,7 +95,6 @@
             android:textColor="@color/colorPrimaryDark"
             android:hint="Landline Number"
             android:inputType="phone"
-            android:maxLength="11"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:layout_marginStart="@dimen/_30sdp"
@@ -168,6 +167,7 @@
                 android:textColor="@color/colorPrimaryDark"
                 android:hint="District"
                 android:paddingStart="10dp"
+                android:visibility="gone"
                 android:paddingEnd="10dp"
                 android:inputType="textCapWords"
                 android:background="@drawable/custom_textbox"/>
@@ -184,7 +184,6 @@
                 android:maxLength="6"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:layout_marginStart="@dimen/_15sdp"
                 android:background="@drawable/custom_textbox"/>
 
         </LinearLayout>

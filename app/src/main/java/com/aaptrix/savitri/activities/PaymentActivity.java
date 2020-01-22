@@ -7,8 +7,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,10 +18,6 @@ import android.widget.TextView;
 import com.aaptrix.savitri.R;
 import com.aaptrix.savitri.databeans.PaymentData;
 import com.aaptrix.savitri.databeans.PlansData;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import com.aaptrix.savitri.asyncclass.UploadPayment;
 import com.aaptrix.savitri.session.FormatDate;
 import com.squareup.picasso.Picasso;
@@ -30,7 +26,7 @@ import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_PLAN_EXPIRE_DATE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
-import static com.aaptrix.savitri.session.URLs.DATA_URL;
+import static com.aaptrix.savitri.activities.SplashScreen.DATA_URL;
 
 public class PaymentActivity extends AppCompatActivity {
 
@@ -44,7 +40,7 @@ public class PaymentActivity extends AppCompatActivity {
     SharedPreferences sp;
     Toolbar toolbar;
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NewApi"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +86,15 @@ public class PaymentActivity extends AppCompatActivity {
                 String[] date = response.getString("TXNDATE").split(" ");
                 FormatDate formatDate = new FormatDate(date[0], "yyyy-MM-dd", "dd-MM-yyyy");
                 transDate.setText(formatDate.format());
+            } else if (response.getString("STATUS").equals("PENDING")) {
+                paymentStatus.setText("Payment Pending");
+                statusImg.setImageResource(R.drawable.payment_failed);
+                statusImg.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.yellow)));
+                transId.setText(response.getString("TXNID"));
+                transAmount.setText(response.getString("TXNAMOUNT"));
+                String[] date = response.getString("TXNDATE").split(" ");
+                FormatDate formatDate = new FormatDate(date[0], "yyyy-MM-dd", "dd-MM-yyyy");
+                transDate.setText(formatDate.format());
             } else {
                 paymentStatus.setText("Payment Failed");
                 statusImg.setImageResource(R.drawable.payment_failed);
@@ -123,6 +128,14 @@ public class PaymentActivity extends AppCompatActivity {
                 if (paymentData.getStatus().equals("TXN_SUCCESS")) {
                     paymentStatus.setText("Payment Successfull");
                     statusImg.setImageResource(R.drawable.payment_success);
+                    transId.setText(paymentData.getTxnId());
+                    transAmount.setText(paymentData.getAmount());
+                    FormatDate formatDate = new FormatDate(paymentData.getDate(), "yyyy-MM-dd", "dd-MM-yyyy");
+                    transDate.setText(formatDate.format());
+                } else if (paymentData.getStatus().equals("PENDING")) {
+                    paymentStatus.setText("Payment Successfull");
+                    statusImg.setImageResource(R.drawable.payment_failed);
+                    statusImg.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.yellow)));
                     transId.setText(paymentData.getTxnId());
                     transAmount.setText(paymentData.getAmount());
                     FormatDate formatDate = new FormatDate(paymentData.getDate(), "yyyy-MM-dd", "dd-MM-yyyy");

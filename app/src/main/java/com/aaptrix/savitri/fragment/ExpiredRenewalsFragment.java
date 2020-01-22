@@ -3,7 +3,6 @@ package com.aaptrix.savitri.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,10 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +26,6 @@ import com.aaptrix.savitri.adapter.RenewalStatusAdapter;
 import com.aaptrix.savitri.databeans.ComplianceData;
 import com.aaptrix.savitri.session.SharedPrefsManager;
 import com.aaptrix.savitri.session.URLs;
-import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +33,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -57,6 +52,8 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 import static android.content.Context.CONNECTIVITY_SERVICE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_ORG_ID;
 import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_SESSION_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ID;
+import static com.aaptrix.savitri.session.SharedPrefsNames.KEY_USER_ROLE;
 import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 
 public class ExpiredRenewalsFragment extends Fragment {
@@ -66,9 +63,8 @@ public class ExpiredRenewalsFragment extends Fragment {
     private TextView noStatus;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private String strOrgId, strSessionId;
+    private String strOrgId, strSessionId, strUserId, strUserType;
     private Context context;
-    private FrameLayout layout;
 
     public ExpiredRenewalsFragment() {
 
@@ -87,12 +83,13 @@ public class ExpiredRenewalsFragment extends Fragment {
         noStatus = view.findViewById(R.id.no_renewal);
         progressBar = view.findViewById(R.id.progress_bar);
         listView = view.findViewById(R.id.renewal_listview);
-        layout = view.findViewById(R.id.layout);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
 
         SharedPreferences sp = context.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
         strOrgId = sp.getString(KEY_ORG_ID, "");
         strSessionId = sp.getString(KEY_SESSION_ID, "");
+        strUserId = sp.getString(KEY_USER_ID, "");
+        strUserType = sp.getString(KEY_USER_ROLE, "");
         progressBar.setVisibility(View.VISIBLE);
         setRenewalStatus();
 
@@ -129,7 +126,7 @@ public class ExpiredRenewalsFragment extends Fragment {
                     data.setRefNo(jObject.getString("compliance_reference_no"));
                     data.setValidfrom(jObject.getString("compliance_valid_from"));
                     data.setValidTo(jObject.getString("compliance_valid_upto"));
-                    data.setAssignedTo(jObject.toString());
+                    data.setAssignedTo(jObject.getString("assign_users_name"));
                     renewalArray.add(data);
                 }
             } catch (Exception e) {
@@ -153,6 +150,8 @@ public class ExpiredRenewalsFragment extends Fragment {
                 entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
                 entityBuilder.addTextBody("org_details_id", strOrgId);
                 entityBuilder.addTextBody("app_session_id", strSessionId);
+                entityBuilder.addTextBody("users_details_id", strUserId);
+                entityBuilder.addTextBody("users_type", strUserType);
                 HttpEntity entity = entityBuilder.build();
                 httppost.setEntity(entity);
                 HttpResponse response = httpclient.execute(httppost);
@@ -188,7 +187,7 @@ public class ExpiredRenewalsFragment extends Fragment {
                                 data.setRefNo(jObject.getString("compliance_reference_no"));
                                 data.setValidfrom(jObject.getString("compliance_valid_from"));
                                 data.setValidTo(jObject.getString("compliance_valid_upto"));
-                                data.setAssignedTo(jObject.toString());
+                                data.setAssignedTo(jObject.getString("assign_users_name"));
                                 renewalArray.add(data);
                             }
                         }

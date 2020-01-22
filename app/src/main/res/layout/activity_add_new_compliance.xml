@@ -7,6 +7,20 @@
     android:background="@drawable/background"
     tools:context=".activities.AddNewCompliance">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80111111"
+        android:id="@+id/progress_bar"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -16,13 +30,6 @@
         android:theme="@style/toolbarTheme"
         app:titleTextColor="@color/toolbarTextColor"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progress_bar"
-        android:layout_centerInParent="true"
-        android:visibility="gone"/>
 
     <ScrollView
         android:layout_width="match_parent"

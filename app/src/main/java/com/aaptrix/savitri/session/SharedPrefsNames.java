@@ -20,6 +20,11 @@ public class SharedPrefsNames {
 	public static final String KEY_COM_COUNT = "com_count";
 	public static final String KEY_PEOPLE_COUNT = "people_count";
 	public static final String KEY_GRACE = "grace_period";
+	public static final String KEY_USERPHONE = "user_phone";
+	public static final String KEY_USEREMAIL = "user_email";
+	public static final String KEY_PHONE = "mobile_number";
+	public static final String KEY_PASSWORD = "password";
+	public static final String KEY_TOKEN = "token";
 
 	//Compliance Preferences
 	public static final String COM_PREFS = "compliance_prefs";

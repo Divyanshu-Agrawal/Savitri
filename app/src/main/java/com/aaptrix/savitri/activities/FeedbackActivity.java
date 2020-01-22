@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
@@ -47,7 +48,7 @@ import static com.aaptrix.savitri.session.SharedPrefsNames.USER_PREFS;
 public class FeedbackActivity extends AppCompatActivity {
 	
 	Toolbar toolbar;
-	ProgressBar progressBar;
+	RelativeLayout progressBar;
 	RadioButton yes, no;
 	RadioGroup radioGroup;
 	EditText comment;
@@ -73,6 +74,10 @@ public class FeedbackActivity extends AppCompatActivity {
 		strOrgId = sp.getString(KEY_ORG_ID, "");
 		strSessionId = sp.getString(KEY_SESSION_ID, "");
 		strUserId = sp.getString(KEY_USER_ID, "");
+
+		progressBar.setOnClickListener(v -> {});
+		progressBar.setOnTouchListener((v, event) -> false);
+		progressBar.bringToFront();
 		
 		comment.setOnFocusChangeListener((v, hasFocus) -> {
 			if (!hasFocus)
@@ -101,6 +106,7 @@ public class FeedbackActivity extends AppCompatActivity {
 			} else if (strYesNo == null) {
 				Toast.makeText(this, "Please Select Yes or No", Toast.LENGTH_SHORT).show();
 			} else {
+				submit.setEnabled(false);
 				SendFeedback sendFeedback = new SendFeedback(this);
 				sendFeedback.execute(strOrgId, strUserId, strSessionId, comment.getText().toString(), strYesNo);
 			}

@@ -98,26 +98,8 @@ public class RenewalStatusAdapter extends ArrayAdapter<ComplianceData> {
 		} else {
 			holder.more.setVisibility(View.GONE);
 		}
-		
-		ArrayList<String> array = new ArrayList<>();
-		try {
-			JSONObject jsonObject = new JSONObject(data.getAssignedTo());
-			for (int i = 0; i < 5; i++) {
-				JSONObject jObject = jsonObject.getJSONObject("assign_users_list" + i);
-				array.add(jObject.getString("users_name"));
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		if (array.size() > 1) {
-			int size = array.size() - 1;
-			holder.assignedTo.setText(array.get(0) + " +" + size);
-		} else if (array.size() == 1) {
-			holder.assignedTo.setText(array.get(0));
-		} else {
-			holder.assignedTo.setText("Not Assigned");
-		}
+
+		holder.assignedTo.setText(data.getAssignedTo());
 		
 		holder.more.setOnClickListener(v -> {
 			PopupMenu popup = new PopupMenu(v.getContext(), v);
@@ -138,8 +120,6 @@ public class RenewalStatusAdapter extends ArrayAdapter<ComplianceData> {
 						intent.putExtra("validFrom", data.getValidfrom());
 						intent.putExtra("validTo", data.getValidTo());
 						intent.putExtra("notes", data.getNotes());
-						intent.putExtra("assignedBy", data.getAssignedBy());
-						intent.putExtra("assignName", data.getAssignedByName());
 						intent.putExtra("assignedTo", data.getAssignedTo());
 						context.startActivity(intent);
 						break;
@@ -166,6 +146,8 @@ public class RenewalStatusAdapter extends ArrayAdapter<ComplianceData> {
 			intent.putExtra("validFrom", data.getValidfrom());
 			intent.putExtra("validTo", data.getValidTo());
 			intent.putExtra("notes", data.getNotes());
+			intent.putExtra("assignedTo", data.getAssignedTo());
+			intent.putExtra("certificate", data.getCertificate());
 			context.startActivity(intent);
 		});
 		return view;

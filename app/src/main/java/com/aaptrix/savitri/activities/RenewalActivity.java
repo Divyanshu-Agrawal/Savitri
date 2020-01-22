@@ -203,7 +203,7 @@ public class RenewalActivity extends AppCompatActivity {
 				String result = EntityUtils.toString(httpEntity);
 				Handler handler = new Handler(Looper.getMainLooper());
 				handler.post(() -> {
-					if (!result.contains("{\"allRenews\":null}") || !result.contains("\"success\":false,\"msg\":\"Session Expire\"")) {
+					if (result.length() > 15 && !result.contains("{\"allRenews\":null}") && !result.contains("\"success\":false,\"msg\":\"Session Expire\"")) {
 						expiredImage.setVisibility(View.VISIBLE);
 						expiredText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
 					}

@@ -225,6 +225,7 @@ public class UserDetails extends AppCompatActivity {
 				Toast.makeText(this, "Please Select Gender", Toast.LENGTH_SHORT).show();
 				return;
 			} if (type.equals("verification")) {
+				submitBtn.setEnabled(false);
 				RegisterUser registerUser = new RegisterUser(this);
 				registerUser.execute(userName.getText().toString(), strNumber, userEmail.getText().toString(),
 						strDob, strGender, userDesignation.getText().toString(), strPassword);
@@ -387,8 +388,8 @@ public class UserDetails extends AppCompatActivity {
 				try {
 					JSONObject jsonObject = new JSONObject(result);
 					if (jsonObject.getBoolean("success")) {
-						Toast.makeText(context, "Regsitered Successfully", Toast.LENGTH_SHORT).show();
-						LoginUser loginUser = new LoginUser(context, progressBar);
+						Toast.makeText(context, "Registered Successfully", Toast.LENGTH_SHORT).show();
+						LoginUser loginUser = new LoginUser(context, progressBar, "login");
 						loginUser.execute(userMobile, userPassword, token);
 					} else {
 						progressBar.setVisibility(View.GONE);
