@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/feedback"
+        android:title="Feedback"
+        android:icon="@drawable/feedback_icon_small"/>
+
+    <item
+        android:id="@+id/faqs"
+        android:title="FAQs"
+        android:icon="@drawable/faq_icon"/>
+
+    <item
+        android:id="@+id/rate_us"
+        android:title="Rate Us"
+        android:icon="@drawable/rate_icon"/>
+
+    <item
+        android:id="@+id/share_us"
+        android:title="Share App"
+        android:icon="@drawable/share_icon"/>
+
+    <item
+        android:id="@+id/about_savitri"
+        android:title="About Savitri"
+        android:icon="@drawable/app_info_icon"/>
+
+    <item
+        android:id="@+id/app_info"
+        android:title="App Info"
+        android:icon="@drawable/app_info_icon"/>
+
+    <item
+        android:icon="@drawable/logout_icon"
+        android:title="Logout"
+        android:id="@+id/logout"/>
+
+</menu>
