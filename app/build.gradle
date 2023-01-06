@@ -14,15 +14,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        release {
-            storeFile file("Savitri.jks")
-            storePassword "@aptrix123"
-            keyAlias "savitri"
-            keyPassword "@aptrix123"
-        }
-    }
-
     buildTypes {
         release {
             minifyEnabled false
